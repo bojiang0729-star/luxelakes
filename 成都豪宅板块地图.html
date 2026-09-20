@@ -1,0 +1,1513 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="从金融城到麓湖，探索成都代表性高端住区与湖区组团，支持地图、卫星、搜索、分类与排序">
+  <title>成都豪宅核心板块地图 | 楼盘明细</title>
+  <link rel="stylesheet" href="leaflet.min.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --color-ink: #13201f;
+      --color-ink-soft: #3f4d4b;
+      --color-paper: #f3f0e8;
+      --color-paper-deep: #e5e1d6;
+      --color-surface: #faf8f2;
+      --color-lake: #39bda2;
+      --color-lake-deep: #087b68;
+      --color-focus: #087b68;
+      --color-gold: #b99a5a;
+      --color-line: rgb(19 32 31 / 16%);
+      --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+      --font-display: "Microsoft YaHei UI", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
+      --duration-fast: 220ms;
+      --header-height: 64px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { min-inline-size: 320px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-block-size: 100dvh;
+      color: var(--color-ink);
+      background: #14201f;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration-thickness: .08em; text-underline-offset: .2em; }
+    h1, h2, h3 { max-inline-size: 18ch; margin-block: 0 .65em; font-family: var(--font-display); font-weight: 600; line-height: 1.12; letter-spacing: -.035em; }
+    h1 { font-size: clamp(1.55rem, 2.2vw, 2rem); }
+    h2 { font-size: 1.35rem; }
+    :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+    .sr-only {
+      position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    .skip-link {
+      position: fixed; inset-block-start: 1rem; inset-inline-start: 1rem; z-index: 1300;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 44px; min-height: 44px; padding-inline: 1rem;
+      color: var(--color-paper); background: var(--color-ink);
+      border-radius: .35rem; transform: translateY(calc(-100% - 3rem));
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+    .skip-link:focus-visible { transform: translateY(0); }
+
+    .map-page { overflow: hidden; color: #17211f; background: #14201f; }
+
+    .map-brandbar {
+      position: fixed; z-index: 1200; inset: 0 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      min-block-size: var(--header-height); padding-inline: 20px;
+      color: #f4f0e7; background: rgb(16 29 27 / 92%);
+      border-block-end: 1px solid rgb(244 240 231 / 16%);
+      backdrop-filter: blur(12px);
+    }
+    .map-brandbar__brand, .map-brandbar__nav a {
+      display: inline-flex; align-items: center; min-block-size: 44px;
+      color: inherit; text-decoration: none;
+    }
+    .map-brandbar__brand { gap: 12px; }
+    .map-brandbar__brand strong { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: .06em; }
+    .map-brandbar__brand span { padding-inline-start: 12px; color: rgb(244 240 231 / 68%); border-inline-start: 1px solid #9faf87; font-size: .72rem; letter-spacing: .12em; }
+    .map-brandbar__nav { display: flex; align-items: center; gap: 4px; }
+    .map-brandbar__nav a { padding-inline: 10px; color: rgb(244 240 231 / 76%); font-size: .78rem; letter-spacing: .08em; }
+    .map-brandbar__nav a[aria-current="page"], .map-brandbar__nav a:hover { color: #f4f0e7; }
+
+    .map-shell {
+      position: relative; inline-size: 100%; block-size: 100dvh; min-block-size: 100dvh;
+      padding: 0; overflow: hidden;
+      background: radial-gradient(circle at 72% 40%, rgb(79 120 105 / 32%), transparent 34%), #14201f;
+    }
+    #property-map { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; background: transparent; }
+    #property-map .leaflet-tile-pane {
+      background: #e9e6dc;
+      filter: saturate(.58) sepia(.08) contrast(.95) brightness(.92);
+    }
+    [data-map-mode="satellite"] #property-map .leaflet-tile-pane { filter: saturate(.92) contrast(1.04) brightness(.94); }
+    #property-map .leaflet-control-attribution {
+      margin: 0 8px 8px 0; padding: 3px 7px; color: #33413f;
+      background: rgb(246 243 235 / 86%); font-size: 10px;
+    }
+    #property-map .leaflet-control-zoom {
+      overflow: hidden; background: rgb(16 29 27 / 92%);
+      border: 1px solid rgb(244 240 231 / 18%); border-radius: 9px;
+      box-shadow: 0 10px 28px rgb(7 17 15 / 24%);
+    }
+    #property-map .leaflet-control-zoom a {
+      inline-size: 44px; block-size: 44px; color: #f4f0e7;
+      background: transparent; border-block-end-color: rgb(244 240 231 / 14%); line-height: 44px;
+    }
+    #property-map .leaflet-control-zoom a:hover, #property-map .leaflet-control-zoom a:focus-visible {
+      color: #182522; background: #f2eee4;
+    }
+
+    .map-mode-switch {
+      position: absolute; z-index: 1120; inset: 84px 20px auto auto;
+      display: none; gap: 3px; padding: 4px; color: #f4f0e7;
+      background: rgb(16 29 27 / 92%); border: 1px solid rgb(244 240 231 / 18%);
+      border-radius: 11px; box-shadow: 0 12px 34px rgb(7 17 15 / 24%);
+      backdrop-filter: blur(12px);
+    }
+    .is-map-enhanced .map-mode-switch { display: flex; }
+    .map-mode-switch button {
+      min-inline-size: 64px; min-block-size: 44px; padding-inline: 14px;
+      color: rgb(244 240 231 / 72%); background: transparent; border: 0; border-radius: 7px;
+      font-size: .76rem; font-weight: 650; letter-spacing: .06em;
+      transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+    }
+    .map-mode-switch button:hover { opacity: .86; }
+    .map-mode-switch button:active { transform: scale(.97); }
+    .map-mode-switch button[aria-pressed="true"] {
+      color: #182522; background: #f2eee4; box-shadow: inset 0 0 0 1px rgb(23 33 31 / 10%);
+    }
+
+    /* ===== 地图筛选工具栏 ===== */
+    .map-filter {
+      position: absolute; z-index: 1120; inset: 140px 20px auto auto;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    }
+    .map-filter[hidden] { display: none; }
+    .map-filter__toggle {
+      display: inline-flex; align-items: center; gap: 7px;
+      min-block-size: 44px; padding-inline: 15px;
+      color: #f4f0e7; background: rgb(16 29 27 / 92%);
+      border: 1px solid rgb(244 240 231 / 18%); border-radius: 11px;
+      box-shadow: 0 12px 34px rgb(7 17 15 / 24%);
+      backdrop-filter: blur(12px); cursor: pointer;
+      font-size: .78rem; font-weight: 650; letter-spacing: .06em;
+      transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+    }
+    .map-filter__toggle:hover { opacity: .9; }
+    .map-filter__toggle:active { transform: scale(.97); }
+    .map-filter__icon { inline-size: 15px; block-size: 15px; opacity: .8; }
+    .map-filter__badge {
+      display: grid; place-items: center; min-inline-size: 20px; block-size: 20px;
+      padding-inline: 5px; color: #203632; background: #b7c3a2;
+      border-radius: 999px; font-size: .68rem; font-weight: 700;
+    }
+    .map-filter__badge[hidden] { display: none; }
+    .map-filter__panel {
+      inline-size: min(340px, calc(100vw - 40px)); padding: 16px;
+      color: #f4f0e7; background: rgb(16 29 27 / 94%);
+      border: 1px solid rgb(244 240 231 / 16%); border-radius: 12px;
+      box-shadow: 0 20px 50px rgb(7 17 15 / 32%);
+      backdrop-filter: blur(14px);
+      transform-origin: top right;
+      animation: map-filter-in var(--duration-fast) var(--ease-out);
+    }
+    .map-filter__panel[hidden] { display: none; }
+    @keyframes map-filter-in {
+      from { opacity: 0; transform: translateY(-6px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .map-filter__heading {
+      display: flex; align-items: center; justify-content: space-between; margin-block-end: 12px;
+    }
+    .map-filter__heading strong { font-size: .82rem; letter-spacing: .06em; }
+    .map-filter__heading button {
+      min-block-size: 34px; padding-inline: 10px; color: rgb(244 240 231 / 76%);
+      background: transparent; border: 1px solid rgb(244 240 231 / 18%);
+      border-radius: 7px; font-size: .7rem; cursor: pointer;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+    .map-filter__heading button:hover { opacity: .85; }
+    .map-filter__search { display: grid; gap: 5px; margin-block-end: 12px; }
+    .map-filter__search span, .map-filter__field span {
+      color: rgb(244 240 231 / 64%); font-size: .68rem; font-weight: 650; letter-spacing: .05em;
+    }
+    .map-filter__search input, .map-filter__field select {
+      min-block-size: 40px; padding-inline: 11px;
+      color: #f4f0e7; background: rgb(244 240 231 / 8%);
+      border: 1px solid rgb(244 240 231 / 18%); border-radius: 7px;
+      outline: 0; font-size: .76rem;
+    }
+    .map-filter__search input::placeholder { color: rgb(244 240 231 / 42%); }
+    .map-filter__search input:focus, .map-filter__field select:focus {
+      border-color: #9faf87; outline: 2px solid rgb(159 175 135 / 30%); outline-offset: 1px;
+    }
+    .map-filter__search input {
+      inline-size: 100%; min-block-size: 44px;
+    }
+    .map-filter__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .map-filter__field { display: grid; gap: 5px; }
+    .map-filter__field select { inline-size: 100%; cursor: pointer; }
+    .map-filter__field select option { color: #17211f; background: #f5f1e7; }
+
+    @media (max-width: 759px) {
+      .map-filter { inset: 116px 12px auto auto; }
+      .map-filter__toggle { padding-inline: 12px; }
+      .map-filter__panel { inline-size: min(320px, calc(100vw - 24px)); }
+    }
+
+    .map-panel {
+      position: absolute; z-index: 1100; inset: 84px auto 20px 20px;
+      inline-size: min(370px, calc(100% - 40px)); padding: 24px 22px 20px;
+      overflow: auto; overscroll-behavior: contain;
+      color: #17211f; background: #f5f1e7;
+      border: 1px solid rgb(255 255 255 / 50%); border-radius: 12px;
+      box-shadow: 0 22px 70px rgb(9 20 18 / 28%);
+      scrollbar-color: #86938b transparent; scrollbar-width: thin;
+    }
+    .map-panel__handle, .map-panel__close, .map-drawer-toggle { display: none; }
+    .map-panel__header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      padding-block-end: 18px; border-block-end: 1px solid rgb(23 33 31 / 14%);
+    }
+    .map-panel__header h1 { margin: 0; font-weight: 560; line-height: 1.12; }
+    .map-kicker { margin-block: 0 7px; color: #567065; font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
+
+    .map-search { margin-block: 20px 16px; }
+    .map-search label { display: block; margin-block-end: 7px; color: #465450; font-size: .74rem; font-weight: 650; letter-spacing: .05em; }
+    .map-search__field {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      border: 1px solid rgb(23 33 31 / 24%); border-radius: 7px; background: #fffdf8;
+    }
+    .map-search input { min-inline-size: 0; min-block-size: 46px; padding: 0 13px; color: #17211f; background: transparent; border: 0; outline: 0; }
+    .map-search input::placeholder { color: #78827e; }
+    .map-search__field:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .map-search button { min-inline-size: 54px; min-block-size: 44px; padding-inline: 10px; color: #496059; background: transparent; border: 0; font-size: .75rem; }
+
+    .map-districts {
+      display: flex; gap: 7px; padding-block-end: 4px; overflow-x: auto; scrollbar-width: none;
+    }
+    .map-districts::-webkit-scrollbar { display: none; }
+    .map-districts button {
+      flex: none; min-block-size: 44px; padding-inline: 13px;
+      color: #4f5d59; background: transparent; border: 1px solid rgb(23 33 31 / 18%);
+      border-radius: 999px; font-size: .74rem;
+      transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+    }
+    .map-districts button:hover { transform: translateY(-1px); }
+    .map-districts button[aria-pressed="true"] { color: #f6f2e8; background: #203632; border-color: #203632; }
+
+    .map-sort {
+      display: flex; align-items: center; gap: 10px; margin-block: 14px 0;
+    }
+    .map-sort label { flex: none; color: #465450; font-size: .74rem; font-weight: 650; letter-spacing: .05em; }
+    .map-sort select {
+      flex: 1; min-inline-size: 0; min-block-size: 44px; padding-inline: 12px;
+      color: #17211f; background: #fffdf8; border: 1px solid rgb(23 33 31 / 24%);
+      border-radius: 7px; outline: 0; font-size: .78rem; cursor: pointer;
+    }
+    .map-sort select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .map-panel__meta {
+      display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 12px;
+      margin-block: 13px 14px;
+    }
+    .map-panel__meta p { margin: 0; }
+    .map-panel__meta > p:first-child { color: #273733; font-size: .78rem; white-space: nowrap; }
+    .map-panel__meta [data-map-status] { color: #67736f; font-size: .68rem; line-height: 1.45; text-align: end; }
+
+    .property-detail {
+      position: relative; padding: 18px; color: #f5f1e7; background: #223733;
+      border-radius: 8px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
+    }
+    .property-detail::before {
+      position: absolute; inset: 0 auto 0 0; inline-size: 3px; content: "";
+      background: #9faf87;
+    }
+    .property-detail h2 { margin-block: 3px 7px; font-weight: 560; }
+    .property-detail p { margin-block: 0 8px; color: rgb(245 241 231 / 76%); font-size: .78rem; line-height: 1.55; }
+    .property-detail__district { color: #bdc9a8 !important; font-size: .66rem !important; font-weight: 700; letter-spacing: .1em; }
+    .property-detail__meta { color: rgb(245 241 231 / 56%) !important; }
+    .property-detail__row b { color: #dce4d4; font-weight: 650; }
+    .property-detail__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-block-start: 6px; }
+    .property-detail__tag {
+      display: inline-block; padding: 2px 9px; color: #d8e0cd; background: rgb(255 255 255 / 8%);
+      border: 1px solid rgb(255 255 255 / 12%); border-radius: 999px; font-size: .64rem;
+    }
+    .property-detail__price { color: #f0c46a !important; font-size: .95rem !important; font-weight: 700; }
+    .property-detail__link {
+      display: inline-flex; align-items: center; min-block-size: 44px; margin-block-start: 3px;
+      color: #f5f1e7; font-size: .78rem; font-weight: 650; text-decoration-color: #9faf87;
+    }
+
+    .property-list { display: grid; gap: 0; padding: 0; margin: 13px 0 0; list-style: none; }
+
+    .property-list__item { position: relative; border-block-end: 1px solid rgb(23 33 31 / 12%); }
+    .property-list__item .property-detail {
+      margin: 2px 10px 14px 4px;
+      transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+    }
+
+    /* 选中楼盘：标题行 + 详情卡在视觉上融合成一张完整的深色卡片 */
+    .property-list__item.is-selected {
+      margin-block: 5px 0;
+      color: #f5f1e7;
+      background: #223733;
+      border-block-end: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
+    }
+    .property-list__item.is-selected::before {
+      position: absolute; inset: 0 auto 0 0; inline-size: 3px; content: "";
+      background: #9faf87;
+    }
+    .property-list__item.is-selected .property-list__button,
+    .property-list__item.is-selected > a {
+      color: #f5f1e7; background: transparent; border-radius: 12px 12px 0 0;
+    }
+    .property-list__item.is-selected .property-list__button::before { display: none; }
+    .property-list__item.is-selected .property-list__button::after,
+    .property-list__item.is-selected > a::after { color: #f5f1e7; opacity: .6; }
+    .property-list__item.is-selected .property-list__button strong,
+    .property-list__item.is-selected > a strong { color: #f5f1e7; }
+    .property-list__item.is-selected .property-list__button span,
+    .property-list__item.is-selected > a span { color: rgb(245 241 231 / 62%); }
+    .property-list__item.is-selected .property-detail {
+      margin: 0 10px 12px 4px; border-radius: 0 0 12px 12px;
+      background: transparent; box-shadow: none;
+    }
+    .property-list__item.is-selected .property-detail::before { display: none; }
+    .property-list__item.is-selected .property-detail.is-in {
+      animation: property-detail-in var(--duration-fast) var(--ease-out);
+    }
+    @keyframes property-detail-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .property-list__button, .property-list > li > a {
+      position: relative; display: grid; inline-size: 100%; min-block-size: 58px;
+      padding: 10px 28px 10px 4px; color: #263531; background: transparent;
+      border: 0; text-align: start; text-decoration: none;
+      transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+    }
+    .property-list__button:hover, .property-list > li > a:hover { background: rgb(23 33 31 / 5%); }
+    .property-list__button::after, .property-list > li > a::after {
+      position: absolute; inset: 50% 5px auto auto; inline-size: 7px; block-size: 7px;
+      content: ""; border-block-start: 1px solid currentColor; border-inline-end: 1px solid currentColor;
+      opacity: .45; transform: translateY(-50%) rotate(45deg);
+    }
+    .property-list__button strong, .property-list > li > a strong { font-size: .84rem; font-weight: 650; }
+    .property-list__button span, .property-list > li > a span { color: #6c7874; font-size: .68rem; }
+    .property-list__button[aria-current="true"] { color: #0d6d5c; }
+    .property-list__button[aria-current="true"]::before {
+      position: absolute; inset: 12px auto 12px -10px; inline-size: 2px; content: ""; background: #0d6d5c;
+    }
+
+    .property-marker {
+      display: block !important; background: transparent; border: 0;
+      /* 命中区由 JS 的 iconSize 放大到 44×44；这里去掉移动端点按延迟与高亮块 */
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .property-marker__pin {
+      position: absolute; inset-block-end: 0; inset-inline-start: 50%;
+      display: grid; inline-size: 20px; block-size: 20px; place-items: center;
+      color: #31433f; background: currentcolor; border: 2px solid #f4f0e7;
+      border-radius: 50% 50% 50% 0; box-shadow: 0 5px 8px rgb(10 24 21 / 28%);
+      transform: rotate(-45deg); transform-origin: 0 100%;
+    }
+    .property-marker__dot { display: block; inline-size: 7px; block-size: 7px; background: #f4f0e7; border-radius: 50%; }
+    .property-marker--lake .property-marker__pin { color: #207f6d; }
+    .property-marker--featured .property-marker__pin { inline-size: 26px; block-size: 26px; color: #a98445; }
+    .property-marker--featured .property-marker__dot { inline-size: 9px; block-size: 9px; }
+    .property-marker.is-active .property-marker__pin {
+      transform: rotate(-45deg) scale(1.35);
+      box-shadow: 0 0 0 3px #f6f2e8, 0 0 0 6px rgb(13 109 92 / 42%), 0 10px 18px rgb(10 24 21 / 40%);
+    }
+    .property-marker.is-active .property-marker__dot { background: #f6f2e8; }
+    /* 选中针头底部的扩散脉冲光圈，让选中位置在地图上更醒目 */
+    .property-marker.is-active::before {
+      position: absolute; inset-block-end: 0; inset-inline-start: 50%;
+      inline-size: 16px; block-size: 16px; content: "";
+      background: #0d6d5c; border-radius: 50%;
+      opacity: .5; transform: translate(-50%, 50%) scale(.9);
+      animation: marker-pulse 1.7s var(--ease-out) infinite;
+      pointer-events: none;
+    }
+    @keyframes marker-pulse {
+      0%   { opacity: .5; transform: translate(-50%, 50%) scale(.9); }
+      70%  { opacity: 0;  transform: translate(-50%, 50%) scale(3); }
+      100% { opacity: 0;  transform: translate(-50%, 50%) scale(3); }
+    }
+
+    /* ===== 3D 楼栋查看器（ARCANE RISE · 4栋）===== */
+    .tower-viewer {
+      position: fixed; z-index: 3000; inset: 0;
+      display: flex; flex-direction: column;
+      color: #f4f0e7;
+      background: radial-gradient(120% 90% at 50% 8%, rgb(31 44 42 / 96%), rgb(9 16 15 / 98%));
+      backdrop-filter: blur(6px);
+      animation: tower-in .35s var(--ease-out);
+    }
+    .tower-viewer[hidden] { display: none; }
+    .tower-viewer__top {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 15px 20px; border-block-end: 1px solid rgb(244 240 231 / 12%);
+      background: rgb(12 21 20 / 70%);
+    }
+    .tower-viewer__title { display: grid; gap: 2px; }
+    .tower-viewer__title strong { font-size: 1.12rem; letter-spacing: .04em; }
+    .tower-viewer__title span { font-size: .76rem; color: rgb(244 240 231 / 70%); }
+    .tower-viewer__close {
+      min-block-size: 40px; padding-inline: 16px; cursor: pointer;
+      color: #f4f0e7; background: rgb(244 240 231 / 10%);
+      border: 1px solid rgb(244 240 231 / 20%); border-radius: 8px; font-weight: 650;
+      font-family: var(--font-sans);
+    }
+    .tower-viewer__close:hover { background: rgb(244 240 231 / 18%); }
+    .tower-viewer__stage { position: relative; flex: 1; min-block-size: 0; }
+    #tower-canvas { display: block; inline-size: 100%; block-size: 100%; outline: 0; touch-action: none; }
+    .tower-viewer__hint {
+      position: absolute; inset-inline: 0; inset-block-end: 14px; z-index: 2;
+      text-align: center; font-size: .76rem; color: rgb(244 240 231 / 62%);
+      pointer-events: none; letter-spacing: .04em;
+    }
+    .tower-viewer__info {
+      position: absolute; inset-inline: 18px; inset-block-end: 42px; z-index: 2;
+      max-inline-size: 440px; padding: 12px 16px; border-radius: 10px;
+      color: #f4f0e7; background: rgb(12 21 20 / 80%);
+      border: 1px solid rgb(244 240 231 / 14%);
+      box-shadow: 0 12px 34px rgb(7 17 15 / 30%);
+      font-size: .8rem; line-height: 1.6;
+    }
+    .tower-viewer__info b { color: #f3cf9a; font-weight: 650; }
+    .tower-viewer__info .dim { color: rgb(244 240 231 / 62%); }
+    .tower-tip {
+      position: absolute; z-index: 3; max-inline-size: 300px; white-space: nowrap;
+      padding: 8px 12px; border-radius: 8px; pointer-events: none;
+      color: #f4f0e7; background: rgb(18 28 26 / 92%);
+      border: 1px solid rgb(243 207 154 / 38%);
+      box-shadow: 0 10px 28px rgb(7 17 15 / 40%);
+      font-size: .78rem; line-height: 1.55; letter-spacing: .02em;
+    }
+    .tower-tip b { color: #f3cf9a; font-weight: 650; }
+    .tower-tip .dim { color: rgb(244 240 231 / 66%); }
+    .tower-tip[hidden] { display: none; }
+    .tower-sun {
+      position: absolute; z-index: 3; inset-block-start: 14px; inset-inline: 0;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      margin-inline: auto; padding: 10px 16px; inline-size: min(560px, calc(100% - 40px));
+      border-radius: 12px; color: #f4f0e7; background: rgb(12 21 20 / 74%);
+      border: 1px solid rgb(244 240 231 / 16%);
+      box-shadow: 0 12px 30px rgb(7 17 15 / 30%);
+      font-size: .78rem; letter-spacing: .02em;
+    }
+    .tower-sun__play {
+      flex: none; inline-size: 40px; block-size: 40px; border-radius: 50%;
+      color: #f4f0e7; background: rgb(244 240 231 / 12%);
+      border: 1px solid rgb(244 240 231 / 22%); font-size: .92rem; cursor: pointer;
+    }
+    .tower-sun__play:hover { background: rgb(244 240 231 / 22%); }
+    .tower-sun__range {
+      flex: 1; min-inline-size: 0; appearance: none; -webkit-appearance: none;
+      block-size: 6px; border-radius: 999px; outline: 0; cursor: pointer;
+      border: 1px solid rgb(244 240 231 / 14%);
+      background: linear-gradient(90deg, #ff8f5a, #ffcf9a, #ffffff 50%, #ffcf9a, #ff8f5a);
+    }
+    .tower-sun__range::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none; inline-size: 18px; block-size: 18px;
+      border-radius: 50%; background: var(--sun-thumb, #ffffff);
+      border: 2px solid rgb(244 240 231 / 85%); box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
+    }
+    .tower-sun__range::-moz-range-thumb {
+      inline-size: 18px; block-size: 18px; border-radius: 50%;
+      background: var(--sun-thumb, #ffffff); border: 2px solid rgb(244 240 231 / 85%);
+    }
+    .tower-sun__clock {
+      min-inline-size: 46px; text-align: center; font-variant-numeric: tabular-nums;
+      font-weight: 650; color: #f3cf9a; font-size: .92rem;
+    }
+    .tower-sun__phase { font-size: .74rem; color: #ffe0a8; white-space: nowrap; }
+    @keyframes tower-in { from { opacity: 0; transform: translateY(10px); } }
+
+    .leaflet-tooltip {
+      padding: 6px 9px; color: #192724; background: #f6f2e8; border: 0; border-radius: 4px;
+      box-shadow: 0 7px 22px rgb(9 20 18 / 20%); font-family: var(--font-sans);
+      font-size: 12px; font-weight: 650;
+    }
+    .leaflet-tooltip-top::before { border-block-start-color: #f6f2e8; }
+    .property-group-tip {
+      padding: 8px 12px; color: #f6f2e8; background: #203632;
+      border: 1px solid rgb(255 255 255 / 14%); border-radius: 6px;
+      box-shadow: 0 8px 24px rgb(9 20 18 / 28%); font-family: var(--font-sans);
+      font-size: 12px; font-weight: 650; letter-spacing: .02em; white-space: nowrap;
+    }
+    .property-group-tip.leaflet-tooltip-top::before { border-block-start-color: #203632; }
+    .property-group-tip.leaflet-tooltip-left::before { border-inline-start-color: #203632; }
+    .property-group-tip.leaflet-tooltip-right::before { border-inline-end-color: #203632; }
+    .property-group-tip.leaflet-tooltip-bottom::before { border-block-end-color: #203632; }
+
+    .map-noscript {
+      position: fixed; z-index: 700; inset: auto 20px 20px auto; padding: 12px 16px;
+      color: #17211f; background: #f5f1e7; border-radius: 5px;
+    }
+
+    @media (max-width: 759px) {
+      .map-brandbar { min-block-size: 56px; padding-inline: 14px; }
+      .map-brandbar__brand span { display: none; }
+      .map-brandbar__nav { gap: 0; }
+      .map-brandbar__nav a { padding-inline: 8px; font-size: .72rem; letter-spacing: 0; }
+      .map-brandbar__nav a:nth-child(n + 3) { display: none; }
+      .map-mode-switch { inset: 68px 12px auto auto; }
+      .map-sandbox-btn { inset: 68px auto auto 12px; padding-inline: 13px; font-size: .74rem; gap: 7px; }
+      .map-panel {
+        inset: auto 12px 12px; inline-size: auto; max-block-size: min(68dvh, 620px);
+        padding: 12px 18px 18px; border-radius: 20px; box-shadow: 0 18px 60px rgb(9 20 18 / 34%);
+        transform-origin: bottom center;
+      }
+      .is-map-enhanced:not(.is-drawer-open) .map-panel { display: none; }
+      .is-map-enhanced .map-panel__handle {
+        display: block; inline-size: 38px; block-size: 4px; margin: 0 auto 10px;
+        background: rgb(23 33 31 / 22%); border-radius: 999px;
+      }
+      .is-map-enhanced .map-panel__close {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-inline-size: 48px; min-block-size: 44px; padding: 0;
+        color: #52615d; background: transparent; border: 0; font-size: .76rem;
+      }
+      .map-panel__header h1 { font-size: 1.4rem; }
+      .is-map-enhanced .map-drawer-toggle {
+        position: absolute; z-index: 1120; inset: auto 12px 14px;
+        display: flex; align-items: center; justify-content: space-between;
+        min-block-size: 52px; padding-inline: 18px; color: #f7f3e9; background: #203632;
+        border: 1px solid rgb(255 255 255 / 16%); border-radius: 8px;
+        box-shadow: 0 12px 34px rgb(7 17 15 / 28%); font-weight: 650;
+      }
+      .map-drawer-toggle span {
+        display: grid; place-items: center; min-inline-size: 28px; min-block-size: 28px;
+        padding-inline: 5px; color: #203632; background: #b7c3a2; border-radius: 999px; font-size: .72rem;
+      }
+      .is-drawer-open .map-drawer-toggle { opacity: 0; pointer-events: none; transform: translateY(12px); }
+      .map-panel__meta { grid-template-columns: 1fr; gap: 2px; }
+      .map-panel__meta [data-map-status] { text-align: start; }
+      #property-map .leaflet-control-attribution { margin-block-end: 76px; }
+      #property-map .leaflet-control-zoom { margin-block-end: 76px; }
+    }
+    .map-brandbar__nav a.map-brandbar__nav--sandbox {
+      color: #182522; background: #e9d9ad; border-radius: 999px;
+      padding-inline: 14px; margin-inline-start: 6px; min-block-size: 34px;
+      font-weight: 650; letter-spacing: .06em;
+    }
+    .map-brandbar__nav a.map-brandbar__nav--sandbox:hover { color: #182522; background: #f4e7c4; }
+
+    /* ===== 3D 数字沙盘入口 ===== */
+    .map-sandbox-btn {
+      position: absolute; z-index: 1120; inset: 84px auto auto 20px;
+      display: inline-flex; align-items: center; gap: 9px;
+      min-block-size: 44px; padding-inline: 16px;
+      color: #f4f0e7; background: rgb(16 29 27 / 92%);
+      border: 1px solid rgb(244 240 231 / 18%); border-radius: 11px;
+      box-shadow: 0 12px 34px rgb(7 17 15 / 24%);
+      backdrop-filter: blur(12px);
+      font-size: .8rem; font-weight: 650; letter-spacing: .06em;
+      text-decoration: none; white-space: nowrap;
+      transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+    }
+    .map-sandbox-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .map-sandbox-btn:hover { color: #182522; background: #f2eee4; transform: translateY(-1px); }
+    .map-sandbox-btn:active { transform: scale(.97); }
+
+    @media (prefers-reduced-transparency: reduce) {
+      .map-brandbar, .map-mode-switch, #property-map .leaflet-control-zoom { background: #10201d; backdrop-filter: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .property-marker.is-active .property-marker__pin { transform: rotate(-45deg); }
+      .property-marker.is-active::before { animation: none; opacity: 0; }
+      .tower-viewer { animation: none; }
+    }
+  </style>
+</head>
+<body class="map-page" data-page="map">
+  <a class="skip-link" href="#main">跳到楼盘检索</a>
+
+  <header class="map-brandbar">
+    <a class="map-brandbar__brand" href="麓湖生态城.html" aria-label="返回麓湖生态城首页">
+      <strong>麓湖</strong>
+      <span>成都豪宅板块地图</span>
+    </a>
+    <nav class="map-brandbar__nav" aria-label="主导航">
+      <a href="麓湖生态城.html">首页</a>
+      <a href="成都豪宅板块地图.html" aria-current="page">板块地图</a>
+      <a href="浔岭/浔岭.html">浔岭</a>
+      <a href="沉香谷/沉香谷.html">沉香谷</a>
+      <a href="鸿屿长洲/index.html">鸿屿长洲</a>
+      <a href="麓湖生态城3D/luxelakes-3d.html" class="map-brandbar__nav--sandbox" aria-label="打开麓湖生态城 3D 数字沙盘">3D沙盘</a>
+    </nav>
+  </header>
+
+  <main class="map-shell" id="main" data-map-root>
+    <div id="property-map" aria-label="成都豪宅板块地图"></div>
+
+    <div class="map-mode-switch" data-map-mode-switch role="group" aria-label="地图显示模式">
+      <button type="button" data-map-mode="map" aria-pressed="true">地图</button>
+      <button type="button" data-map-mode="satellite" aria-pressed="false">卫星</button>
+    </div>
+
+    <a class="map-sandbox-btn" href="麓湖生态城3D/luxelakes-3d.html" role="link" aria-label="打开麓湖生态城 3D 数字沙盘">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2 2 7v10l10 5 10-5V7L12 2z"></path>
+        <path d="M2 7l10 5 10-5"></path>
+        <path d="M12 12v10"></path>
+      </svg>
+      麓湖生态城 3D 数字沙盘
+    </a>
+
+
+    <div class="map-filter" data-map-filter>
+      <button class="map-filter__toggle" type="button" aria-expanded="false" aria-controls="map-filter-panel" data-map-filter-toggle>
+        <svg class="map-filter__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M7 12h10M10 18h4"></path>
+        </svg>
+        <span>筛选</span>
+        <span class="map-filter__badge" data-filter-active-count hidden>0</span>
+      </button>
+      <form class="map-filter__panel" id="map-filter-panel" data-map-filter-panel hidden>
+        <div class="map-filter__heading">
+          <strong>地图筛选</strong>
+          <button type="button" data-map-filter-reset>重置</button>
+        </div>
+        <label class="map-filter__search">
+          <span>名称</span>
+          <input type="search" autocomplete="off" placeholder="输入楼盘名称" data-map-search>
+        </label>
+        <div class="map-filter__grid">
+          <label class="map-filter__field">
+            <span>板块</span>
+            <select data-map-district>
+              <option value="all">全部板块</option>
+              <option value="金融城">金融城</option>
+              <option value="攀成钢">攀成钢</option>
+              <option value="麓湖生态城">麓湖生态城</option>
+              <option value="锦江带">锦江带</option>
+              <option value="武侯新城">武侯新城</option>
+              <option value="天府新区CBD">天府新区CBD</option>
+            </select>
+          </label>
+          <label class="map-filter__field">
+            <span>状态</span>
+            <select data-map-status-filter>
+              <option value="all">全部状态</option>
+              <option value="已呈现">已呈现</option>
+              <option value="在建">在建</option>
+              <option value="规划中">规划中</option>
+            </select>
+          </label>
+          <label class="map-filter__field">
+            <span>类别</span>
+            <select data-map-category>
+              <option value="all">全部类别</option>
+            </select>
+          </label>
+          <label class="map-filter__field">
+            <span>单价（万/㎡）</span>
+            <select data-map-unit>
+              <option value="all">不限</option>
+              <option value="0-5">5 万以下</option>
+              <option value="5-8">5 - 8 万</option>
+              <option value="8-12">8 - 12 万</option>
+              <option value="12-999">12 万以上</option>
+            </select>
+          </label>
+          <label class="map-filter__field">
+            <span>总价（万）</span>
+            <select data-map-total>
+              <option value="all">不限</option>
+              <option value="0-1000">1000 万以下</option>
+              <option value="1000-2000">1000 - 2000 万</option>
+              <option value="2000-4000">2000 - 4000 万</option>
+              <option value="4000-99999">4000 万以上</option>
+            </select>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <button class="map-drawer-toggle" type="button" aria-controls="map-panel" aria-expanded="false" data-map-drawer-toggle>
+      浏览楼盘
+      <span data-map-drawer-count>57</span>
+    </button>
+
+    <aside class="map-panel" id="map-panel" aria-label="楼盘检索" data-map-panel>
+      <div class="map-panel__handle" aria-hidden="true"></div>
+      <header class="map-panel__header">
+        <div>
+          <p class="map-kicker">成都高端住区图鉴</p>
+          <h1>成都豪宅核心板块</h1>
+        </div>
+        <button class="map-panel__close" type="button" aria-label="关闭楼盘列表" data-map-drawer-close>关闭</button>
+      </header>
+
+      <form class="map-search" role="search" data-map-filter-form>
+        <label for="property-search">搜索楼盘或板块</label>
+        <div class="map-search__field">
+          <input id="property-search" data-property-search type="search" autocomplete="off" placeholder="例如：浔岭、金融城、大平层">
+          <button type="button" data-clear-filters>清除</button>
+        </div>
+      </form>
+
+      <div class="map-districts" data-district-filters aria-label="按板块筛选">
+        <button type="button" aria-pressed="true" data-district="all">全部</button>
+        <button type="button" aria-pressed="false" data-district="金融城">金融城</button>
+        <button type="button" aria-pressed="false" data-district="攀成钢">攀成钢</button>
+        <button type="button" aria-pressed="false" data-district="麓湖生态城">麓湖</button>
+        <button type="button" aria-pressed="false" data-district="锦江带">锦江带</button>
+        <button type="button" aria-pressed="false" data-district="武侯新城">武侯新城</button>
+        <button type="button" aria-pressed="false" data-district="天府新区CBD">天府新区</button>
+      </div>
+
+      <div class="map-sort">
+        <label for="property-sort">排序方式</label>
+        <select id="property-sort" data-property-sort>
+          <option value="default" selected>默认排序</option>
+          <option value="district">按板块</option>
+          <option value="status">按状态</option>
+          <option value="category">按类别</option>
+          <option value="name">按名称</option>
+        </select>
+      </div>
+
+      <div class="map-panel__meta">
+        <p><strong data-property-count>57</strong> 个住区</p>
+        <p data-map-status role="status">正在载入地图，楼盘列表始终可用。</p>
+      </div>
+
+      <article class="property-detail" data-property-detail aria-live="polite">
+        <p class="property-detail__district">麓湖生态城</p>
+        <h2>沉香谷</h2>
+        <p>湖岸低密住区 · 庭院生活</p>
+        <a href="沉香谷/沉香谷.html">查看沉香谷详情</a>
+      </article>
+
+      <ol class="property-list" data-property-list>
+        <li><a href="沉香谷/沉香谷.html"><strong>沉香谷</strong><span>麓湖生态城</span></a></li>
+        <li><a href="浔岭/浔岭.html"><strong>浔岭</strong><span>麓湖生态城</span></a></li>
+      </ol>
+    </aside>
+  </main>
+
+  <div id="tower-viewer" class="tower-viewer" hidden role="dialog" aria-modal="true" aria-label="ARCANE RISE 3D 楼栋楼层查看">
+    <div class="tower-viewer__top">
+      <div class="tower-viewer__title">
+        <strong>鸿屿长洲 · 全景沙盘</strong>
+        <span>天鹅湖 · 两翼高层 · 别墅半岛 · 文化场馆 · 环幕滨湖大平层</span>
+      </div>
+      <button type="button" class="tower-viewer__close" id="tower-close" aria-label="关闭 3D 楼栋视图">关闭</button>
+    </div>
+    <div class="tower-viewer__stage">
+      <canvas id="tower-canvas"></canvas>
+      <div class="tower-sun" id="tower-sun-panel">
+        <button type="button" class="tower-sun__play" id="tower-sun-play" aria-label="播放/暂停昼夜循环">⏸</button>
+        <input type="range" class="tower-sun__range" id="tower-sun-range" min="6" max="18" step="0.5" value="12" aria-label="日照时间">
+        <span class="tower-sun__clock" id="tower-sun">12:00</span>
+        <span class="tower-sun__phase" id="tower-sun-led">正午 · 南向</span>
+      </div>
+      <p class="tower-viewer__hint">拖拽旋转 · 滚轮缩放 · 鼠标指向楼层查看户型 · 拖动顶部时间轴切换光照时刻</p>
+      <div class="tower-viewer__info" id="tower-info"></div>
+      <div class="tower-tip" id="tower-tip" hidden></div>
+    </div>
+  </div>
+
+  <noscript><p class="map-noscript">地图互动需要 JavaScript，您仍可使用楼盘列表访问组团详情。</p></noscript>
+  <script src="leaflet.min.js"></script>
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="vendor/tower3d.js"></script>
+  <script>
+/* ===== 坐标转换：高德 GCJ-02 转 WGS-84（OSM/Esri 瓦片坐标系）===== */
+const SEMI_MAJOR_AXIS = 6378245;
+const ECCENTRICITY_SQUARED = 0.006693421622965943;
+const PI = Math.PI;
+const outsideMainlandChina = (lat, lng) => lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271;
+const transformLat = (x, y) => {
+  let r = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+  r += (20 * Math.sin(6 * x * PI) + 20 * Math.sin(2 * x * PI)) * 2 / 3;
+  r += (20 * Math.sin(y * PI) + 40 * Math.sin(y / 3 * PI)) * 2 / 3;
+  r += (160 * Math.sin(y / 12 * PI) + 320 * Math.sin(y * PI / 30)) * 2 / 3;
+  return r;
+};
+const transformLng = (x, y) => {
+  let r = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+  r += (20 * Math.sin(6 * x * PI) + 20 * Math.sin(2 * x * PI)) * 2 / 3;
+  r += (20 * Math.sin(x * PI) + 40 * Math.sin(x / 3 * PI)) * 2 / 3;
+  r += (150 * Math.sin(x / 12 * PI) + 300 * Math.sin(x / 30 * PI)) * 2 / 3;
+  return r;
+};
+const gcj02ToWgs84 = ([lat, lng]) => {
+  if (outsideMainlandChina(lat, lng)) return [lat, lng];
+  let dLat = transformLat(lng - 105, lat - 35);
+  let dLng = transformLng(lng - 105, lat - 35);
+  const radLat = lat / 180 * PI;
+  const magic = 1 - ECCENTRICITY_SQUARED * Math.sin(radLat) * Math.sin(radLat);
+  const sqrtMagic = Math.sqrt(magic);
+  dLat = dLat * 180 / (((SEMI_MAJOR_AXIS * (1 - ECCENTRICITY_SQUARED)) / (magic * sqrtMagic)) * PI);
+  dLng = dLng * 180 / ((SEMI_MAJOR_AXIS / sqrtMagic) * Math.cos(radLat) * PI);
+  return [Number((lat - dLat).toFixed(6)), Number((lng - dLng).toFixed(6))];
+};
+
+/* ===== 楼盘数据 ===== */
+const DISTRICTS = [
+  {
+    area: '金融城', cl: '#e74c3c', ac: [30.583, 104.055],
+    ab: [[30.597, 104.030], [30.597, 104.080], [30.570, 104.080], [30.570, 104.030]],
+    devs: [
+      { nm: '西派国际', c: [30.581, 104.045], info: { p: '5-8万/㎡', t: '大平层', s: '160-350㎡', a: '锦城大道/剑南大道交汇·西派系标杆', d: '中铁建', m: '5/9号线 锦城大道站', tg: ['品质标杆', '剑南大道'] } },
+      { nm: '中海九号公馆', c: [30.583, 104.049], info: { p: '5-8万/㎡', t: '高层住宅', s: '140-320㎡', a: '万象南路·金融城西·中海高端系', d: '中海地产', m: '5号线 交子大道站', tg: ['品牌房企', '成熟配套'] } },
+      { nm: '誉峰', c: [30.579, 104.053], info: { p: '5-8万/㎡', t: '高层住宅', s: '120-300㎡', a: '交子大道核心·金融城成熟生活圈', d: '合景泰富', m: '1/9号线 金融城站', tg: ['交子大道', '双地铁'] } },
+      { nm: '银泰华悦府', c: [30.582, 104.059], info: { p: '6-10万/㎡', t: '高层/公寓', s: '150-400㎡', a: '天府大道·SKP顶奢商业·华尔道夫', d: '银泰置地', m: '18号线 世纪城站', tg: ['顶奢商业', '天府大道', 'SKP'] } },
+      { nm: '交子公馆', c: [30.586, 104.066], info: { p: '8-12万/㎡', t: '大平层', s: '121-186㎡', a: '交子大道33号·金融城站·管家服务', d: '华商', m: '1号线 金融城站', tg: ['公园景观', '金融核心', '交子公园'] } },
+    ],
+  },
+  {
+    area: '攀成钢', cl: '#e67e22', ac: [30.636, 104.104],
+    ab: [[30.650, 104.088], [30.650, 104.120], [30.620, 104.120], [30.620, 104.088]],
+    devs: [
+      { nm: '绿地锦天府', c: [30.641, 104.092], info: { p: '4-7万/㎡', t: '高层/别墅', s: '130-350㎡', a: '东二环·沙河畔·园林社区', d: '绿地集团', m: '8号线 东大路站', tg: ['城市别墅', '沙河畔', '成熟社区'] } },
+      { nm: '仁恒滨河湾', c: [30.637, 104.097], info: { p: '6-9万/㎡', t: '高层住宅', s: '120-280㎡', a: '沙河景观·新加坡仁恒·顶奢物业', d: '仁恒置地', m: '2号线 塔子山公园站', tg: ['顶级物业', '河景', '国际社区'] } },
+      { nm: '吉宝凌云峰阁', c: [30.634, 104.102], info: { p: '4-6万/㎡', t: '高层住宅', s: '100-200㎡', a: '攀成钢中心·新加坡精工品牌', d: '吉宝置业', m: '2/8号线 东大路站', tg: ['精工品质', '国际社区'] } },
+      { nm: '伊泰天骄', c: [30.632, 104.108], info: { p: '5-8万/㎡', t: '大平层', s: '160-450㎡', a: '通宝街88号·攀成钢核心·超大户型', d: '伊泰集团', m: '2号线 牛市口站', tg: ['超大户型', '核心地段'] } },
+      { nm: 'ICC天曜', c: [30.636, 104.115], info: { p: '5-8万/㎡', t: '超高层住宅', s: '110-260㎡', a: '东大街地标·环贸商圈·成都东客站', d: '新鸿基/九龙仓/恒基', m: '2号线 成都东客站', tg: ['地标建筑', 'TOD', '东大街'] } },
+    ],
+  },
+  {
+    area: '麓湖生态城', cl: '#2ecc71', ac: [30.460, 104.066],
+    ab: [[30.476, 104.046], [30.475, 104.062], [30.474, 104.080], [30.473, 104.090], [30.468, 104.094], [30.460, 104.095], [30.452, 104.093], [30.446, 104.091], [30.442, 104.085], [30.440, 104.075], [30.441, 104.065], [30.442, 104.056], [30.446, 104.051], [30.452, 104.047], [30.460, 104.045], [30.468, 104.044], [30.473, 104.045]],
+    devs: [
+      { nm: '黑珍珠', c: [30.462, 104.065], sz: 0.0008, info: { p: '12-20万/㎡', t: '定制滨湖别墅', hx: [{ t: '标准', s: '630-800㎡ 5-6室' }, { t: '大宅', s: '800-1000㎡ 7室' }, { t: '楼王', s: '1000-1140㎡ 7室+' }], f: 3, u: 3, b: '27', addr: '雅州路78号', ft: '临湖大独栋·曼妙曲面设计·私家码头', d: '万华集团', m: '1号线 红石公园站', tg: ['滨湖首排', '私家码头', '顶级别墅'] } },
+      { nm: '麒麟荟', c: [30.4626, 104.0607], sz: 0.0003, info: { p: '8-15万/㎡', t: '湖岛高层', hx: [{ t: 'A1', s: '407㎡ 6室3厅', u: 'https://m.fang.com/xf/cd/3211178980/2377.htm' }, { t: 'A2', s: '415㎡ 6室3厅', u: 'https://m.fang.com/xf/cd/3211178980/2378.htm' }, { t: 'B1', s: '248-267㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3211178980/360680.htm' }, { t: 'B2', s: '204-206㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3211178980/360683.htm' }, { t: 'B3', s: '190㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3211178980/360684.htm' }, { t: 'C1', s: '219㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3211178980/2376.htm' }, { t: 'C2', s: '276㎡ 5室2厅', u: 'https://m.fang.com/xf/cd/3211178980/2375.htm' }], f: 30, u: 3, b: '4', addr: '天津路西段427-428号', ft: '湖心岛·360°环幕湖景·游艇入户', d: '万华集团', m: '1号线 红石公园站', tg: ['湖岛高层', '福布斯封面', '湖心地标'] } },
+      { nm: '玲珑屿', c: [30.4632, 104.0612], sz: 0.0005, info: { p: '6-10万/㎡', t: '湖景别墅', hx: [{ t: '五居', s: '300-450㎡ 临湖独栋' }, { t: '五居', s: '450-600㎡ 带码头' }], f: 4, u: 3, b: '22', addr: '天津路西段408号', ft: '湖滨别墅·私密半岛·仅22户', d: '万华集团', m: '1号线 麓湖站', tg: ['湖心岛', '码头', '全景景观'] } },
+      { nm: '黑钰岛', c: [30.466, 104.064], sz: 0.0006, info: { p: '10-18万/㎡', t: '定制湖心别墅', hx: [{ t: '标准', s: '300-600㎡ 独栋' }, { t: '大宅', s: '600-830㎡ 6室+' }], f: 3, u: 2, b: '—', addr: '雅州路899号', ft: '湖心岛·黑钻立面·极致私密·现代风格', d: '万华集团', m: '1号线 麓湖站', tg: ['湖心岛', '定制别墅', '极致私密', '湖岛独家'] } },
+      { nm: '天玑幻影', c: [30.4661, 104.0605], sz: 0.0005, info: { p: '6-12万/㎡', t: '湖景大平层', hx: [{ t: '3室', s: '130㎡ 3室2厅' }, { t: '4室', s: '169-200㎡ 4室2厅' }, { t: '4室', s: '260-296㎡ 4室3厅' }, { t: '5室+', s: '300-500㎡ 5-6室 大平层' }], f: 25, u: 3, b: '11', addr: '嘉州路89号', ft: '未来感雕塑建筑·全景落地窗·湖东首排', d: '万华集团', m: '1号线 麓湖站', tg: ['临湖首排', '大平层', '全景景观'] } },
+      { nm: '天星月影', c: [30.4674, 104.0618], sz: 0.0005, info: { p: '5-10万/㎡', t: '住宅', hx: [{ t: '3室', s: '120-170㎡ 3室2厅' }, { t: '4室', s: '170-260㎡ 4室2厅' }, { t: '5室+', s: '260-350㎡ 5-6室 大平层' }], f: 20, u: 3, b: '3', addr: '天府大道南段南延线', ft: '北岸湖景·诗意静谧·湖居生活', d: '万华集团', m: '1号线 红石公园站', tg: ['北岸湖景', '湖区生活'] } },
+      { nm: '蓝花屿', c: [30.4626, 104.0661], sz: 0.0007, info: { p: '5-10万/㎡', t: '别墅', hx: [{ t: 'A型', s: '295-362㎡ 4-5室 联排' }, { t: 'B型', s: '362-420㎡ 5-6室 联排' }, { t: 'C型', s: '420-490㎡ 6-7室 独栋' }, { t: 'D型', s: '490-559㎡ 7室 独栋' }], f: 4, u: 4, b: '128', addr: '天津路西段(麓湖生态城内)', ft: '会呼吸的积木·纯现代风格·大面开窗', d: '万华集团', m: '1号线 麓湖站', tg: ['湖滨别墅', '静享湖区'] } },
+      { nm: '黑蝶贝', c: [30.4613, 104.0607], sz: 0.0004, info: { p: '6-12万/㎡', t: '别墅', hx: [{ t: '标准', s: '631-800㎡ 5-6室 独栋' }, { t: '大宅', s: '800-1144㎡ 6-7室 临湖带码头' }], f: 3, u: 3, b: '12', addr: '天府大道麓山国际社区南', ft: '形似黑珍珠·地下室防渗设计·精装独栋', d: '万华集团', m: '1号线 红石公园站', tg: ['湖岸别墅', '高端私密'] } },
+      { nm: '云龙荟', c: [30.4616, 104.0589], sz: 0.0005, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '3室', s: '120-160㎡' }, { t: '4室', s: '160-220㎡' }, { t: '大平层', s: '220-300㎡' }], f: 18, u: 4, b: '1', addr: '天府大道南段(麓湖生态城)', ft: '湖西居住·成熟组团·近红石公园', d: '万华集团', m: '1号线 红石公园站', tg: ['湖西居住', '成熟组团'] } },
+      { nm: '云龙阁', c: [30.4609, 104.0588], sz: 0.0004, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '3室', s: '100-160㎡' }, { t: '4室', s: '160-220㎡' }, { t: '大平层', s: '220-260㎡' }], f: 20, u: 4, b: '—', addr: '嘉州路(麓湖生态城)', ft: '湖西南区·5+design设计·建筑立面独特', d: '万华集团', m: '1号线 红石公园站', tg: ['湖西居住', '南区组团'] } },
+      { nm: '云镜', c: [30.4632, 104.0591], sz: 0.0005, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '3室', s: '120-170㎡' }, { t: '4室', s: '170-230㎡' }, { t: '大平层', s: '230-280㎡' }], f: 22, u: 3, b: '—', addr: '嘉州路199号', ft: '湖岛腹地·安静宜居·观景视野好', d: '万华集团', m: '1号线 麓湖站', tg: ['湖岛住区', '安静宜居'] } },
+      { nm: '芸集', c: [30.4648, 104.0563], sz: 0.0006, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: '3室', s: '100-150㎡' }, { t: '4室', s: '150-200㎡' }, { t: '大平层', s: '200-250㎡' }], f: 20, u: 3, b: '—', addr: '邻坊路(麓湖生态城)', ft: '湖岛社区·配套完善·近麓坊商业中心', d: '万华集团', m: '1号线 麓湖站', tg: ['湖岛社区', '配套完善'] } },
+      { nm: '澜语溪岸', c: [30.4647, 104.0595], sz: 0.0006, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '3室', s: '110-140㎡' }, { t: '4室', s: '140-200㎡' }, { t: '大平层', s: '200-260㎡' }], f: 18, u: 3, b: '3', addr: '麓湖滨湖示范区核心', ft: '三面环水·2013年首发组团·直接临湖/192户', d: '万华集团', m: '1号线 麓湖站', tg: ['北岸社区', '湖区生活'] } },
+      { nm: '隐溪岸', c: [30.465, 104.059], sz: 0.0005, info: { p: '5-9万/㎡', t: '叠拼别墅', hx: [{ t: '叠拼', s: '200-280㎡ 4室2厅 露台花园' }, { t: '独栋', s: '337-430㎡ 6室3厅 临湖带码头' }], f: 6, u: 2, b: '43', addr: '天府大道南段牧华立交南侧', ft: '三面环水·独栋私密·半岛形态·仅43户', d: '万华集团', m: '1号线 麓湖站', tg: ['环水半岛', '生态宜居', '私密静谧'] } },
+      { nm: '琉璃溪岸', c: [30.4672, 104.0661], sz: 0.0006, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '3室', s: '110-150㎡' }, { t: '4室', s: '150-200㎡' }, { t: '大平层', s: '200-260㎡' }], f: 18, u: 3, b: '1', addr: '天府大道南一段(麓湖生态城)', ft: '北岸社区·湖景住区·板楼设计/118户', d: '万华集团', m: '1号线 红石公园站', tg: ['北岸社区', '湖景住区'] } },
+      { nm: '水晶溪岸', c: [30.4681, 104.0657], sz: 0.0006, info: { p: '4-8万/㎡', t: '住宅', hx: [{ t: '二居', s: '94㎡' }, { t: '三居', s: '118-131㎡' }, { t: '四居', s: '135-168㎡' }], f: 18, u: 3, b: '—', addr: '润朗路200号', ft: '北岸社区·近湖居住·成熟生活圈', d: '万华集团', m: '1号线 红石公园站', tg: ['北岸社区', '近湖居住'] } },
+      { nm: '琥珀瀛洲', c: [30.4678, 104.0638], sz: 0.0005, info: { p: '5-9万/㎡', t: '住宅', hx: [{ t: '3室', s: '130-170㎡' }, { t: '4室', s: '170-230㎡' }, { t: '大平层', s: '230-300㎡' }], f: 20, u: 3, b: '23', addr: '华阳街道沙河村(润朗路)', ft: '临湖社区·湖景视野·176户', d: '万华集团', m: '1号线 红石公园站', tg: ['临湖社区', '湖景视野'] } },
+      { nm: '汀院', c: [30.4547, 104.0590], sz: 0.0007, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'A', s: '140㎡ 3室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77317.htm' }, { t: 'B', s: '185㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77323.htm' }, { t: 'C', s: '200㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77320.htm' }], f: 20, u: 4, b: '—', addr: '青岛路西段与田家路交汇处', ft: '南区水岸·生态宜居·精装交付', d: '万华集团', m: '1号线 麓湖站/武汉路站', tg: ['南区水岸', '生态宜居'] } },
+      { nm: '沚院', c: [30.4528, 104.0592], sz: 0.0007, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'A', s: '138-150㎡ 3室2厅' }, { t: 'B1', s: '180-190㎡ 4室2厅' }, { t: 'C1', s: '190㎡ 4室2厅' }, { t: 'C2', s: '205㎡ 4室2厅' }, { t: 'C3', s: '230-260㎡ 4室2厅' }], f: 20, u: 4, b: '5', addr: '漫汀街218号', ft: '南区住宅·水岸生活·5+design设计/569户', d: '万华集团', m: '1号线 武汉路站', tg: ['南区住宅', '水岸生活'] } },
+      { nm: '芸台漫汀', c: [30.4551, 104.0613], sz: 0.0007, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'A1', s: '220㎡ 5室2厅', u: 'https://m.fang.com/xf/cd/3210160474/1542451.htm' }, { t: 'B1', s: '220㎡ 5室2厅', u: 'https://m.fang.com/xf/cd/3210160474/1542452.htm' }, { t: 'C', s: '300㎡ 5室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77329.htm' }], f: 18, u: 4, b: '4', addr: '麓湖中路西段506号', ft: '南岸社区·湖区配套成熟/211户·2021年建成', d: '万华集团', m: '1号线 武汉路站', tg: ['南岸社区', '湖区配套'] } },
+      { nm: '长滩', c: [30.4500, 104.0591], sz: 0.0008, info: { p: '4-6万/㎡', t: '住宅', hx: [{ t: '标准', s: '100-220㎡ 3室2厅-4室2厅' }, { t: '顶复', s: '500㎡ 5室3厅' }], f: 18, u: 4, b: '—', addr: '嘉州路1111号', ft: '南岸入口·门户位置·近地铁武汉路站', d: '万华集团', m: '1号线 武汉路站', tg: ['南区组团', '门户位置'] } },
+      { nm: 'C20组团', c: [30.4511, 104.0585], sz: 0.0006, info: { p: '3-6万/㎡', t: '住宅', hx: '90-200㎡ 规划住宅', f: 15, u: 4, b: '—', addr: '嘉州路(南岸规划组团)', ft: '规划组团·南区发展·待交付', d: '万华集团', m: '1号线 武汉路站', tg: ['规划组团', '南区发展'] } },
+      { nm: '沄洲', c: [30.4453, 104.0576], sz: 0.0008, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'D1', s: '285㎡ 4室2厅' }, { t: '标准', s: '193㎡ 4室2厅' }, { t: '小三居', s: '120㎡ 3室2厅' }], f: 18, u: 4, b: '—', addr: '武汉路西段(湖区西南)', ft: '西南水岸·自有沄洲码头·湖区住宅', d: '万华集团', m: '1号线 武汉路站', tg: ['西南片区', '湖区住宅'] } },
+      { nm: '沄岸', c: [30.4455, 104.0596], sz: 0.0007, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'D1', s: '237-254㎡ 4室2厅' }, { t: 'D2a', s: '245㎡ 4室2厅' }, { t: '标准', s: '215㎡ 5室2厅' }], f: 18, u: 4, b: '7', addr: '麓湖南路西段688号', ft: '西南水岸·湖区生活/662户·2024年售罄', d: '万华集团', m: '1号线 武汉路站', tg: ['西南水岸', '湖区生活'] } },
+      { nm: '观澜', c: [30.4452, 104.0622], sz: 0.0007, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: 'A型', s: '334-350㎡ 4室2厅 楼王大平层' }, { t: 'B2', s: '270㎡ 4室2厅' }, { t: 'F型', s: '198㎡ 4室2厅' }, { t: '标准', s: '167-175㎡ 4室2厅' }], f: 22, u: 4, b: '—', addr: '雅州路1588号', ft: '南门户·近地铁武汉路站·观景佳', d: '万华集团', m: '1号线 武汉路站', tg: ['南门户', '近地铁'] } },
+      { nm: '玥港', c: [30.4502, 104.0544], sz: 0.0007, info: { p: '4-6万/㎡', t: '住宅', hx: [{ t: 'A型', s: '171㎡ 4室2厅' }, { t: 'B型', s: '175㎡ 4室2厅' }, { t: 'C型', s: '200㎡ 4室2厅' }], f: 18, u: 3, b: '—', addr: '麓湖南路西段9号', ft: '西南住区·湖区生活·性价比较高', d: '万华集团', m: '1号线 武汉路站', tg: ['西南住区', '湖区生活'] } },
+      { nm: '钰屿珑湾', c: [30.4471, 104.0560], sz: 0.0007, info: { p: '3-6万/㎡', t: '高层+洋房', hx: [{ t: 'A3', s: '208㎡ 4室3厅' }, { t: '主力', s: '210㎡ 4室2厅 大平层' }, { t: '大宅', s: '260-280㎡ 5室2厅 大平层' }, { t: '楼王', s: '328㎡ 5室2厅 大平层' }], f: 18, u: 3, b: '—', addr: '绵州路西(湖心双湾区)', ft: '湖心双湾区·精装大平层/约438户·2028年交付', d: '万华集团', m: '1号线 武汉路站', tg: ['西南组团', '宜居社区'] } },
+      { nm: 'C17组团', c: [30.4536, 104.0643], sz: 0.0006, info: { p: '3-6万/㎡', t: '住宅', hx: '90-200㎡ 规划住宅', f: 15, u: 4, b: '—', addr: '澄湾路239号', ft: '南岸规划组团·待交付', d: '万华集团', m: '1号线 武汉路站', tg: ['规划组团', '南区'] } },
+      { nm: 'C25组团', c: [30.4491, 104.0534], sz: 0.0006, info: { p: '3-6万/㎡', t: '住宅', hx: '90-200㎡ 规划住宅', f: 15, u: 4, b: '—', addr: '绵州路与麓湖南路西交叉口南', ft: '在建组团·西南片区·建设中', d: '万华集团', m: '1号线 武汉路站', tg: ['建设中', '西南组团'] } },
+      { nm: '沉香谷', c: [30.459, 104.080], sz: 0.0010, info: { p: '4-8万/㎡', t: '洋房/别墅', hx: [{ t: '独栋', s: '180-280㎡ 4-5室 新中式' }, { t: '大独栋', s: '280-350㎡ 5-6室 日式庭院' }], f: 6, u: 4, b: '—', addr: '麓湖中路东段505号', ft: '低密公园·新中式日式结合·2015年建成', d: '万华集团', m: '1号线 武汉路站', tg: ['低密公园', '精致园林', '安静舒适'], detailUrl: '沉香谷/沉香谷.html' } },
+      { nm: '鸿屿长洲', c: [30.4481, 104.0563], sz: 0.0008, info: { p: '5-10万/㎡', t: '滨湖大平层', hx: [{ t: '屿境', s: '约215㎡ 4室2厅3卫' }, { t: '长洲', s: '约318㎡ 5室2厅4卫' }, { t: '鸿屿', s: '约468㎡ 6室3厅6卫' }], f: 12, u: 4, b: '—', addr: '麓湖中路东段·滨湖组团', ft: '三面环湖·户户面湖·低密度滨湖大平层', d: '万华集团', m: '1号线 红石公园站', tg: ['滨湖首排', '低密度', '户户面湖'], detailUrl: '鸿屿长洲/index.html' } },
+      { nm: '浔岭', c: [30.4564, 104.0787], sz: 0.0008, info: { p: '4-7万/㎡', t: '高层住宅', hx: [{ t: 'F', s: '约220㎡ 四房设计', u: '../浔岭/浔岭.html' }, { t: 'E', s: '约280㎡ 三面采光', u: '../浔岭/浔岭.html' }, { t: 'D', s: '约330㎡ 三面观景', u: '../浔岭/浔岭.html' }, { t: 'C', s: '200-210㎡ 5室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77340.htm' }, { t: 'B2', s: '170-185㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77334.htm' }, { t: 'B1', s: '170-185㎡ 4室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77330.htm' }, { t: 'A2', s: '130-140㎡ 3室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77345.htm' }, { t: 'A1', s: '130-140㎡ 3室2厅', u: 'https://m.fang.com/xf/cd/3210160474/77337.htm' }], f: 18, u: 4, b: '8', addr: '赤岭路88号', ft: '公园东区·直面红石公园3期·27-42F超高层', d: '万华集团', m: '1号线 武汉路站', tg: ['公园东', '低密住区'] } },
+      { nm: '五彩林堤', c: [30.4626, 104.0777], sz: 0.0008, info: { p: '4-7万/㎡', t: '住宅', hx: [{ t: '3室', s: '103-183㎡ 3室2厅' }, { t: '4室', s: '180-199㎡ 4室2厅' }, { t: '4室', s: '199㎡ 4室2厅 超大阳台' }], f: 18, u: 4, b: '3', addr: '天津路东段268号', ft: '公园北·生态社区/355户·近红石公园', d: '万华集团', m: '1号线 麓湖站', tg: ['公园北', '生态社区'] } },
+      { nm: '白玉台', c: [30.4602, 104.0769], sz: 0.0008, info: { p: '4-8万/㎡', t: '别墅', hx: [{ t: '标准', s: '305-340㎡ 5室2厅 欧式独栋' }, { t: '大宅', s: '340-372㎡ 5-6室 独栋' }], f: 4, u: 3, b: '146', addr: '天府大道南段(麓湖生态城)', ft: '公园别墅·低密高端·欧式独栋146套', d: '万华集团', m: '1号线 麓湖站', tg: ['公园别墅', '低密高端'] } },
+      { nm: '雅集(在建)', c: [30.4625, 104.0700], sz: 0.0005, info: { p: '待定', t: '住宅', hx: '待定', f: 18, u: 4, b: '—', addr: '天津路西段南', ft: '新组团·在建中·2025年最新开盘', d: '万华集团', m: '1号线 麓湖站', tg: ['在建', '新组团', '期待'] } },
+      { nm: '玄鸟湾(在建)', c: [30.4570, 104.0558], sz: 0.0007, info: { p: '待定', t: '住宅', hx: '待定', f: 18, u: 4, b: '—', addr: '麓湖中路西段(湖区西)', ft: '在建·湖区西新组团·规划高层', d: '万华集团', m: '1号线 武汉路站', tg: ['在建', '湖区西', '新组团'] } },
+    ],
+  },
+  {
+    area: '锦江带', cl: '#9b59b6', ac: [30.666, 104.083],
+    ab: [[30.695, 104.068], [30.695, 104.102], [30.645, 104.102], [30.645, 104.068]],
+    devs: [
+      { nm: '望江名门', c: [30.662, 104.079], info: { p: '5-8万/㎡', t: '超高层住宅', s: '150-400㎡', a: '望江公园旁·一线锦江·极致视野', d: '成都城投', m: '2号线 牛王庙站', tg: ['一线江景', '望江公园', '极致视野'] } },
+      { nm: '阿玛尼艺术公寓', c: [30.667, 104.082], info: { p: '6-10万/㎡', t: '服务式公寓/住宅', s: '80-300㎡', a: '锦江畔·乔治·阿玛尼设计·地标', d: '城投/阿玛尼', m: '2号线 牛王庙站', tg: ['设计品牌', '地标建筑', '艺术公寓'] } },
+      { nm: '新希望D10天府', c: [30.670, 104.089], info: { p: '4-8万/㎡', t: '超高层住宅', s: '90-500㎡', a: '东大街·229米住宅新高度·城市封面', d: '新希望地产', m: '2/6号线 牛王庙站', tg: ['超高层', '城市封面', '东大街'] } },
+    ],
+  },
+  {
+    area: '武侯新城', cl: '#3498db', ac: [30.614, 103.996],
+    ab: [[30.635, 103.970], [30.635, 104.018], [30.595, 104.018], [30.595, 103.970]],
+    devs: [
+      { nm: '武侯金茂府', c: [30.608, 103.988], info: { p: '4-6万/㎡', t: '科技住宅/洋房', s: '130-300㎡', a: '武侯立交·十二大科技系统·恒温恒湿', d: '中国金茂', m: '3/10号线 武侯立交站', tg: ['科技住宅', '恒温恒湿', '品质标杆'] } },
+      { nm: '西派城', c: [30.617, 103.993], info: { p: '3.5-5.5万/㎡', t: '洋房/高层', s: '120-280㎡', a: '武侯新城核心·西派系·法式园林', d: '中铁建', m: '3号线 机投桥站', tg: ['法式园林', '西派系', '核心'] } },
+      { nm: '当代璞誉', c: [30.612, 104.002], info: { p: '3-5万/㎡', t: '高层住宅', s: '100-200㎡', a: '绿色科技·装配式建筑', d: '当代置业', m: '3号线 武侯立交站', tg: ['绿色科技', '装配式建筑'] } },
+      { nm: '武侯樾府', c: [30.621, 104.006], info: { p: '3-5万/㎡', t: '高层/洋房', s: '110-220㎡', a: '双楠成熟商圈·龙湖/中铁建·改善标杆', d: '龙湖/中铁建', m: '3/10号线 武侯立交站', tg: ['成熟商圈', '改善标杆', '双楠'] } },
+    ],
+  },
+  {
+    area: '天府新区CBD', cl: '#1abc9c', ac: [30.423, 104.064],
+    ab: [[30.455, 104.035], [30.455, 104.085], [30.390, 104.085], [30.390, 104.035]],
+    devs: [
+      { nm: '保利和光屿湖', c: [30.414, 104.053], info: { p: '3.5-6万/㎡', t: '高层/洋房/别墅', s: '120-400㎡', a: '杭州路·湖区·和光系·低密生态', d: '保利发展', m: '6号线 杭州路站', tg: ['湖区低密', '和光系', '生态宜居'] } },
+      { nm: '万科天府锦绣', c: [30.426, 104.065], info: { p: '4-7万/㎡', t: '高层/洋房', s: '130-350㎡', a: '杭州路·天府CBP核心·万科塔尖系', d: '万科集团', m: '1/6号线 天府公园站', tg: ['天府CBP', '塔尖系', '公园城市'] } },
+      { nm: '中海天府里', c: [30.432, 104.072], info: { p: '3-5.5万/㎡', t: '超高层/高层', s: '110-250㎡', a: '宁波路·CBD核心·中海地标', d: '中海地产', m: '1/6号线 天府商务区站', tg: ['CBD核心', '超高层', '地标'] } },
+      { nm: '首开龙湖云著', c: [30.420, 104.077], info: { p: '3-5万/㎡', t: '高层住宅', s: '120-220㎡', a: '杭州路西·公园西·双品牌改善', d: '首开/龙湖', m: '6号线 杭州路站', tg: ['双品牌', '公园西', '改善'] } },
+    ],
+  },
+];
+
+/* ===== 价格区间解析（用于地图筛选） ===== */
+/* 单价：'5-8万/㎡' → [5, 8]；'3.5-5.5万/㎡' → [3.5, 5.5]；'待定' → null */
+const parsePriceRange = (str) => {
+  const m = String(str || '').match(/(\d+(?:\.\d+)?)\s*[-~至]\s*(\d+(?:\.\d+)?)/);
+  return m ? [Number(m[1]), Number(m[2])] : null;
+};
+/* 面积字符串：'130-140㎡' → [130, 140]；'约220㎡' → [220, 220]；未知 → null */
+const parseAreaFromString = (raw) => {
+  const text = String(raw || '');
+  const ranged = text.match(/(\d+(?:\.\d+)?)\s*[-~至]\s*(\d+(?:\.\d+)?)\s*㎡/);
+  if (ranged) return [Number(ranged[1]), Number(ranged[2])];
+  const single = text.match(/(\d+(?:\.\d+)?)\s*㎡/);
+  return single ? [Number(single[1]), Number(single[1])] : null;
+};
+/* 面积：'160-350㎡' → [160, 350]；从 hx 户型列表汇总；未知 → null */
+const parseAreaRange = (info) => {
+  if (info.s) {
+    const direct = parseAreaFromString(info.s);
+    if (direct) return direct;
+  }
+  if (typeof info.hx === 'string') return parseAreaFromString(info.hx);
+  if (Array.isArray(info.hx)) {
+    let min = Infinity, max = 0;
+    info.hx.forEach((h) => {
+      const r = parseAreaFromString(h && h.s);
+      if (r) { min = Math.min(min, r[0]); max = Math.max(max, r[1]); }
+    });
+    return min === Infinity ? null : [min, max];
+  }
+  return null;
+};
+/* 户型级总价区间：每个户型的总价 = 户型面积区间 × 整盘单价区间；
+   如浔岭 A1(130-140㎡, 单价 4-7万) → [520, 980] 万；F(约220㎡) → [880, 1540] 万 */
+const computeUnitTotals = (info, unitRange) => {
+  if (!unitRange) return null;
+  const totals = [];
+  const push = (area) => {
+    if (!area) return;
+    totals.push([Number((area[0] * unitRange[0]).toFixed(1)), Number((area[1] * unitRange[1]).toFixed(1))]);
+  };
+  if (info.s) push(parseAreaFromString(info.s));
+  if (Array.isArray(info.hx)) info.hx.forEach((h) => push(parseAreaFromString(h && h.s)));
+  else if (typeof info.hx === 'string') push(parseAreaFromString(info.hx));
+  return totals.length ? totals : null;
+};
+
+/* ===== 归一化楼盘记录 ===== */
+const slugify = (name) => 'p-' + name.replace(/[()（）]/g, '').replace(/\s+/g, '-');
+const statusOf = (name, info) => {
+  if (name.includes('(在建)') || name.includes('在建')) return '在建';
+  if (name.startsWith('C') && info.ft && info.ft.includes('规划')) return '规划中';
+  if (info.ft && (info.ft.includes('规划') || info.ft.includes('待交付'))) return '规划中';
+  return '已呈现';
+};
+const PROPERTIES = [];
+const AREA_ORDER = [];
+DISTRICTS.forEach((district) => {
+  AREA_ORDER.push(district.area);
+  district.devs.forEach((dev) => {
+    const unit = parsePriceRange(dev.info && dev.info.p);
+    const area = parseAreaRange(dev.info);
+    const total = unit && area ? [Number((unit[0] * area[0]).toFixed(1)), Number((unit[1] * area[1]).toFixed(1))] : null;
+    const unitTotals = computeUnitTotals(dev.info, unit);
+    PROPERTIES.push({
+      id: slugify(dev.nm),
+      name: dev.nm,
+      district: district.area,
+      sourceCoordinates: dev.c,
+      coordinates: gcj02ToWgs84(dev.c),
+      status: statusOf(dev.nm, dev.info),
+      category: dev.info.t,
+      summary: dev.info.ft || dev.info.a || '',
+      detailPath: dev.info.detailUrl || (dev.nm === '浔岭' ? '浔岭/浔岭.html' : (dev.nm === '沉香谷' ? '沉香谷/沉香谷.html' : null)),
+      featured: dev.nm === '沉香谷' || dev.nm === '浔岭' || dev.nm === '鸿屿长洲',
+      info: dev.info,
+      radius: dev.sz || 0.0010,
+      priceUnit: unit,          /* [最低, 最高] 万/㎡ */
+      priceTotal: total,        /* [最低, 最高] 万元（整盘推导） */
+      priceTotalUnits: unitTotals, /* 户型级总价区间数组（每个户型面积 × 整盘单价） */
+    });
+  });
+});
+const DISTRICT_ORDER = AREA_ORDER;
+const STATUS_ORDER = ['已呈现', '在建', '规划中'];
+
+const rankOf = (value, order) => {
+  const index = order.indexOf(value);
+  return index === -1 ? order.length : index;
+};
+const compareProperties = (a, b, sortKey) => {
+  switch (sortKey) {
+    case 'district': return rankOf(a.district, DISTRICT_ORDER) - rankOf(b.district, DISTRICT_ORDER);
+    case 'status': return rankOf(a.status, STATUS_ORDER) - rankOf(b.status, STATUS_ORDER);
+    case 'category': return String(a.category ?? '').localeCompare(String(b.category ?? ''), 'zh-CN');
+    case 'name': return String(a.name ?? '').localeCompare(String(b.name ?? ''), 'zh-CN');
+    default: return 0;
+  }
+};
+const briefGroupInfo = (property) => {
+  const status = property.status && property.status !== '已呈现' ? ` · ${property.status}` : '';
+  return `${property.name} · ${property.district}${status}`;
+};
+/* 单价筛选：以单价区间中点落入所选档位判断（半开区间 [min, max)），更符合直觉 */
+const priceMidpointIn = (range, bucket) => {
+  if (!range || !bucket) return false;
+  const mid = (range[0] + range[1]) / 2;
+  const parts = String(bucket).split('-').map(Number);
+  return mid >= parts[0] && mid < parts[1];
+};
+/* 总价筛选：户型总价区间与所选档位有重叠即命中（区间触及或低于档位均包含） */
+const rangesOverlap = (a, b) => a && b && a[0] <= b[1] && b[0] <= a[1];
+const totalMatchesBucket = (totals, bucket) => {
+  const parts = String(bucket).split('-').map(Number);
+  return Array.isArray(totals) && totals.some((r) => rangesOverlap(r, parts));
+};
+const filterProperties = (records, { text = '', district = 'all', status = 'all', category = 'all', unitPrice = 'all', totalPrice = 'all' } = {}) => {
+  const needle = text.trim().toLocaleLowerCase('zh-CN');
+  return records.filter((item) => {
+    const matchesDistrict = district === 'all' || item.district === district;
+    const matchesStatus = status === 'all' || item.status === status;
+    const matchesCategory = category === 'all' || (item.category || '') === category;
+    /* 价格未知的楼盘（待定）在具体价格筛选时不显示 */
+    const matchesUnit = unitPrice === 'all' || priceMidpointIn(item.priceUnit, unitPrice);
+    const matchesTotal = totalPrice === 'all' || totalMatchesBucket(item.priceTotalUnits, totalPrice);
+    const info = item.info || {};
+    const haystack = [item.name, item.district, item.summary, info.a, info.d, info.m, info.t]
+      .filter(Boolean).join(' ').toLocaleLowerCase('zh-CN');
+    return matchesDistrict && matchesStatus && matchesCategory && matchesUnit && matchesTotal
+      && (!needle || haystack.includes(needle));
+  });
+};
+(function () {
+  'use strict';
+  var root = document.querySelector('[data-map-root]');
+  var mapNode = document.getElementById('property-map');
+  var search = document.querySelector('[data-property-search]');
+  var districts = document.querySelector('[data-district-filters]');
+  var list = document.querySelector('[data-property-list]');
+  var detail = document.querySelector('[data-property-detail]');
+  var count = document.querySelector('[data-property-count]');
+  var drawerToggle = document.querySelector('[data-map-drawer-toggle]');
+  var drawerCount = document.querySelector('[data-map-drawer-count]');
+  var drawerClose = document.querySelector('[data-map-drawer-close]');
+  var panel = document.querySelector('[data-map-panel]');
+  var clear = document.querySelector('[data-clear-filters]');
+  var form = document.querySelector('[data-map-filter-form]');
+  var modeSwitch = document.querySelector('[data-map-mode-switch]');
+  var sortControl = document.querySelector('[data-property-sort]');
+  var status = document.querySelector('[data-map-status]');
+  /* 地图筛选工具栏控件 */
+  var mapFilter = document.querySelector('[data-map-filter]');
+  var mapFilterToggle = document.querySelector('[data-map-filter-toggle]');
+  var mapFilterPanel = document.querySelector('[data-map-filter-panel]');
+  var mapSearch = document.querySelector('[data-map-search]');
+  var mapDistrict = document.querySelector('[data-map-district]');
+  var mapStatus = document.querySelector('[data-map-status-filter]');
+  var mapCategory = document.querySelector('[data-map-category]');
+  var mapUnit = document.querySelector('[data-map-unit]');
+  var mapTotal = document.querySelector('[data-map-total]');
+  var mapFilterReset = document.querySelector('[data-map-filter-reset]');
+  var filterBadge = document.querySelector('[data-filter-active-count]');
+  if (!root || !mapNode || !window.L) {
+    if (status) status.textContent = '地图组件暂不可用，您仍可使用楼盘列表。';
+    return;
+  }
+  var leaflet = window.L;
+  var state = { district: 'all', query: '', sort: 'default', selectedId: null, mapMode: 'map', status: 'all', category: 'all', unitPrice: 'all', totalPrice: 'all' };
+  var markers = new Map();
+  var markerFailures = 0;
+  var debounceTimer = null;
+  var tileFailures = { map: false, satellite: false };
+
+  var map = leaflet.map(mapNode, { zoomControl: false, attributionControl: true, maxZoom: 20 })
+    .setView([30.60, 104.07], 11);
+  leaflet.control.zoom({ position: 'bottomright' }).addTo(map);
+  var standardTiles = leaflet.tileLayer(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution: '&copy; OpenStreetMap contributors', maxNativeZoom: 19, maxZoom: 20, minZoom: 8 }
+  );
+  var satelliteTiles = leaflet.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community', maxNativeZoom: 19, maxZoom: 20, minZoom: 8 }
+  );
+  function hideFailedTile(e) {
+    if (e && e.tile) { e.tile.style.opacity = '0'; e.tile.style.visibility = 'hidden'; }
+  }
+  standardTiles.on('tileerror', function (e) {
+    hideFailedTile(e);
+    if (!tileFailures.map) { tileFailures.map = true; if (status) status.textContent = '标准地图暂未载入，楼盘列表仍可使用。'; }
+  });
+  satelliteTiles.on('tileerror', function (e) {
+    hideFailedTile(e);
+    if (!tileFailures.satellite) { tileFailures.satellite = true; if (status) status.textContent = '部分卫星影像暂未载入，标准地图与楼盘列表仍可使用。'; }
+  });
+  standardTiles.addTo(map);
+
+  /* ===== 楼盘标记 ===== */
+  function markerTone(property) {
+    if (property.featured) return 'featured';
+    if (property.district === '麓湖生态城') return 'lake';
+    return 'city';
+  }
+  /* 触控命中区：Leaflet 图标盒本身就是点击热区。pin 视觉尺寸不变（仍由 CSS 决定），
+     这里只把图标盒放大到 44×44 —— 移动端推荐的最小触控尺寸；
+     锚点取盒底中心，而 pin 锚定在盒的「底部中点」，因此落点位置与放大前完全一致。 */
+  var MARKER_HIT = 44;
+  function markerIcon(property, active) {
+    var tone = markerTone(property);
+    return leaflet.divIcon({
+      className: 'property-marker property-marker--' + tone + (active ? ' is-active' : ''),
+      html: '<span class="property-marker__pin" aria-hidden="true"><span class="property-marker__dot"></span></span>',
+      iconSize: [MARKER_HIT, MARKER_HIT],
+      iconAnchor: [MARKER_HIT / 2, MARKER_HIT],
+      tooltipAnchor: [0, -MARKER_HIT],
+    });
+  }
+
+  PROPERTIES.forEach(function (property) {
+    try {
+      var marker = leaflet.marker(property.coordinates, {
+        title: property.name,
+        keyboard: true,
+        icon: markerIcon(property, false),
+      });
+      /* 保留并增强悬停显示简短组团信息 */
+      marker.bindTooltip(briefGroupInfo(property), { direction: 'top', opacity: 0.96, className: 'property-group-tip' });
+      /* 点击标记：选中并显示对应楼盘详情 */
+      marker.on('click', function () {
+        selectProperty(property);
+        /* 卫星模式下点击楼盘：展示可旋转 3D 楼栋（当前仅鸿屿长洲/ARCANE RISE），
+           暂不打开列表抽屉，让 3D 建筑完整呈现 */
+        if (state.mapMode === 'satellite' && property.name === '鸿屿长洲') {
+          openTowerViewer();
+        } else {
+          openDrawer();
+        }
+      });
+      marker.addTo(map);
+      markers.set(property.id, marker);
+    } catch (err) {
+      markerFailures += 1;
+    }
+  });
+
+  /* ===== 渲染详情卡 ===== */
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function renderDetail(property) {
+    if (!detail) return;
+    detail.replaceChildren();
+    if (!property) {
+      var heading = el('h2', null, '没有匹配的住区');
+      var copy = el('p', null, '请更换关键词或选择其他板块。');
+      detail.append(heading, copy);
+      return;
+    }
+    var info = property.info || {};
+    var districtEl = el('p', 'property-detail__district', property.district);
+    var heading = el('h2', null, property.name);
+    var meta = el('p', 'property-detail__meta', (property.category || '') + ' · ' + property.status);
+    var price = el('p', 'property-detail__price', info.p || '');
+    detail.append(districtEl, heading, meta);
+    if (price.textContent) detail.append(price);
+    if (info.s) {
+      var areaRow = el('div', 'property-detail__row');
+      areaRow.append(el('b', null, '面积：'), document.createTextNode(info.s));
+      detail.append(areaRow);
+    }
+    if (Array.isArray(info.hx)) {
+      var hxRow = el('div', 'property-detail__row');
+      hxRow.append(el('b', null, '户型：'));
+      var hxText = info.hx.map(function (h) { return h.t + ' ' + h.s; }).join('；');
+      hxRow.append(document.createTextNode(hxText));
+      detail.append(hxRow);
+    } else if (info.hx) {
+      var hxRow2 = el('div', 'property-detail__row');
+      hxRow2.append(el('b', null, '户型：'), document.createTextNode(info.hx));
+      detail.append(hxRow2);
+    }
+    if (info.f) {
+      var fRow = el('div', 'property-detail__row');
+      fRow.append(el('b', null, '楼层：'), document.createTextNode(info.f + '层' + (info.u ? ' · ' + info.u + '单元' : '') + (info.b ? ' · ' + info.b + '栋' : '')));
+      detail.append(fRow);
+    }
+    if (info.addr || info.a) {
+      var aRow = el('div', 'property-detail__row');
+      aRow.append(el('b', null, '地址：'), document.createTextNode(info.addr || info.a));
+      detail.append(aRow);
+    }
+    if (info.ft) {
+      var ftRow = el('div', 'property-detail__row');
+      ftRow.append(el('b', null, '特点：'), document.createTextNode(info.ft));
+      detail.append(ftRow);
+    }
+    if (info.d) {
+      var dRow = el('div', 'property-detail__row');
+      dRow.append(el('b', null, '开发商：'), document.createTextNode(info.d));
+      detail.append(dRow);
+    }
+    if (info.m) {
+      var mRow = el('div', 'property-detail__row');
+      mRow.append(el('b', null, '地铁：'), document.createTextNode(info.m));
+      detail.append(mRow);
+    }
+    if (Array.isArray(info.tg) && info.tg.length) {
+      var tags = el('div', 'property-detail__tags');
+      info.tg.forEach(function (tag) { tags.append(el('span', 'property-detail__tag', tag)); });
+      detail.append(tags);
+    }
+    if (property.detailPath) {
+      var link = el('a', 'property-detail__link', '查看' + property.name + '详情');
+      link.href = property.detailPath;
+      detail.append(link);
+    }
+  }
+
+  /* 详情卡嵌入当前选中列表项内部，与楼盘条目融为一体，并随鼠标移动跟随 */
+  var detailHome = detail ? detail.parentNode : null;
+  function placeDetail() {
+    if (!list || !detail) return;
+    var items = list.querySelectorAll('.property-list__item');
+    for (var i = 0; i < items.length; i += 1) items[i].classList.remove('is-selected');
+    if (detail.parentNode) detail.parentNode.removeChild(detail);
+    var selected = list.querySelector('[data-property-id="' + state.selectedId + '"]');
+    var target = selected ? selected.closest('li') : null;
+    if (target && target.parentNode) {
+      target.classList.add('is-selected');
+      target.insertBefore(detail, selected.nextSibling);
+    } else if (detailHome) {
+      detailHome.insertBefore(detail, list.nextSibling ? list.nextSibling : null);
+    }
+    /* 触发一次进入动画，详情卡随鼠标移动时更丝滑 */
+    detail.classList.remove('is-in');
+    void detail.offsetWidth;
+    detail.classList.add('is-in');
+  }
+
+  /* ===== 渲染列表 ===== */
+  function renderList(visible) {
+    if (!list) return;
+    var rows = visible.map(function (property) {
+      var row = el('li', 'property-list__item');
+      var button = el('button', 'property-list__button');
+      button.type = 'button';
+      button.dataset.propertyId = property.id;
+      button.setAttribute('aria-current', String(property.id === state.selectedId));
+      var name = el('strong', null, property.name);
+      var meta = el('span', null, property.district + ' · ' + (property.category || ''));
+      button.append(name, meta);
+      row.append(button);
+      return row;
+    });
+    list.replaceChildren.apply(list, rows);
+  }
+
+  /* ===== 选中与筛选 ===== */
+  function updateMarkerSelection(selectedId) {
+    PROPERTIES.forEach(function (property) {
+      var marker = markers.get(property.id);
+      if (!marker) return;
+      var active = property.id === selectedId;
+      marker.setIcon(markerIcon(property, active));
+      marker.setZIndexOffset(active ? 1200 : 0);
+    });
+  }
+  function selectProperty(id, options) {
+    options = options || {};
+    /* 支持直接传入楼盘对象或 id */
+    var property = (id && typeof id === 'object') ? id : PROPERTIES.find(function (item) { return item.id === id; });
+    if (!property) return;
+    var propertyId = property.id;
+    state.selectedId = propertyId;
+    var rows = list ? list.querySelectorAll('[data-property-id]') : [];
+    for (var i = 0; i < rows.length; i += 1) {
+      rows[i].setAttribute('aria-current', String(rows[i].dataset.propertyId === propertyId));
+    }
+    renderDetail(property);
+    placeDetail();
+    updateMarkerSelection(propertyId);
+    var marker = markers.get(propertyId);
+    if (options.moveMap !== false && marker) map.flyTo(marker.getLatLng(), 15, { duration: 0.8 });
+  }
+  function updateStatus(visibleCount) {
+    if (!status || tileFailures[state.mapMode]) return;
+    var modeLabel = state.mapMode === 'satellite' ? '卫星影像' : '标准地图';
+    var failureNote = markerFailures ? '，' + markerFailures + ' 个点位暂未显示' : '';
+    status.textContent = '显示 ' + visibleCount + ' 个住区' + failureNote + '，当前使用' + modeLabel + '。';
+  }
+  function updateDistrictButtons() {
+    var buttons = districts ? districts.querySelectorAll('[data-district]') : [];
+    for (var i = 0; i < buttons.length; i += 1) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].dataset.district === state.district));
+    }
+  }
+  /* 将地图筛选工具栏控件同步为当前筛选状态，并更新激活条件徽标 */
+  function syncMapFilterUI() {
+    if (mapSearch && mapSearch.value !== state.query) mapSearch.value = state.query;
+    if (mapDistrict && mapDistrict.value !== state.district) mapDistrict.value = state.district;
+    if (mapStatus && mapStatus.value !== state.status) mapStatus.value = state.status;
+    if (mapCategory && mapCategory.value !== state.category) mapCategory.value = state.category;
+    if (mapUnit && mapUnit.value !== state.unitPrice) mapUnit.value = state.unitPrice;
+    if (mapTotal && mapTotal.value !== state.totalPrice) mapTotal.value = state.totalPrice;
+    if (filterBadge) {
+      var activeCount = [state.query, state.district !== 'all', state.status !== 'all', state.category !== 'all', state.unitPrice !== 'all', state.totalPrice !== 'all']
+        .filter(function (v) { return v !== '' && v !== false; }).length;
+      filterBadge.textContent = String(activeCount);
+      filterBadge.hidden = activeCount === 0;
+    }
+  }
+  function applyFilters(next, options) {
+    options = options || {};
+    next = next || {};
+    if ('text' in next) state.query = String(next.text || '');
+    if ('district' in next) state.district = next.district || 'all';
+    if ('sort' in next) state.sort = next.sort || 'default';
+    if ('status' in next) state.status = next.status || 'all';
+    if ('category' in next) state.category = next.category || 'all';
+    if ('unitPrice' in next) state.unitPrice = next.unitPrice || 'all';
+    if ('totalPrice' in next) state.totalPrice = next.totalPrice || 'all';
+    var matched = filterProperties(PROPERTIES, {
+      text: state.query, district: state.district, status: state.status,
+      category: state.category, unitPrice: state.unitPrice, totalPrice: state.totalPrice,
+    });
+    var visible = matched.slice().sort(function (a, b) { return compareProperties(a, b, state.sort); });
+    var visibleIds = new Set(visible.map(function (property) { return property.id; }));
+    markers.forEach(function (marker, id) {
+      if (visibleIds.has(id)) marker.addTo(map);
+      else marker.remove();
+    });
+    if (!visibleIds.has(state.selectedId)) state.selectedId = visible.length ? visible[0].id : null;
+    updateDistrictButtons();
+    if (count) count.textContent = String(visible.length);
+    if (drawerCount) drawerCount.textContent = String(visible.length);
+    renderList(visible);
+    renderDetail(visible.find(function (property) { return property.id === state.selectedId; }) || null);
+    placeDetail();
+    updateMarkerSelection(state.selectedId);
+    updateStatus(visible.length);
+    syncMapFilterUI();
+    if (options.fit !== false) {
+      var coords = visible.filter(function (property) { return markers.has(property.id); }).map(function (property) { return property.coordinates; });
+      if (coords.length) map.fitBounds(leaflet.latLngBounds(coords), { padding: [56, 56], maxZoom: 14 });
+    }
+    return visible;
+  }
+
+  /* ===== 地图模式 ===== */
+  function setMapMode(mode) {
+    if (mode !== 'map' && mode !== 'satellite') return;
+    state.mapMode = mode;
+    root.dataset.mapMode = mode;
+    var buttons = modeSwitch ? modeSwitch.querySelectorAll('[data-map-mode]') : [];
+    for (var i = 0; i < buttons.length; i += 1) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].dataset.mapMode === mode));
+    }
+    if (mode === 'satellite') satelliteTiles.addTo(map);
+    else satelliteTiles.remove();
+    updateStatus(PROPERTIES.filter(function (property) { return markers.has(property.id); }).length);
+  }
+
+  /* ===== 抽屉 ===== */
+  function openDrawer() {
+    root.classList.add('is-drawer-open');
+    drawerToggle.setAttribute('aria-expanded', 'true');
+    map.invalidateSize();
+    if (search) search.focus();
+  }
+  function closeDrawer(restoreFocus) {
+    root.classList.remove('is-drawer-open');
+    drawerToggle.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) drawerToggle.focus();
+  }
+
+  /* ===== 事件 ===== */
+  function handleSearch() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      applyFilters({ text: search ? search.value : '' });
+    }, 120);
+  }
+  function handleDistrict(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-district]') : null;
+    if (button) applyFilters({ district: button.dataset.district });
+  }
+  function handleList(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-property-id]') : null;
+    if (button) selectProperty(button.dataset.propertyId);
+  }
+  /* 悬停切换：鼠标移到列表项，顶部详情卡与高亮即时跟随；地图定位单独防抖，保证丝滑不跳动 */
+  var hoverId = null;
+  var flyTimer = null;
+  function handleListHover(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-property-id]') : null;
+    if (!button) return;
+    var id = button.dataset.propertyId;
+    if (id === hoverId) return;
+    hoverId = id;
+    /* 详情卡与列表高亮即时更新（不移动地图，形成"跟随"手感） */
+    selectProperty(id, { moveMap: false });
+    /* 地图定位加防抖：鼠标扫过列表时平滑落到最后停留的组团 */
+    clearTimeout(flyTimer);
+    flyTimer = setTimeout(function () {
+      var marker = markers.get(id);
+      if (marker) map.flyTo(marker.getLatLng(), 15, { duration: 0.8 });
+    }, 120);
+  }
+  function handleListLeave() {
+    clearTimeout(flyTimer);
+    hoverId = null;
+  }
+  function resetAllFilters() {
+    clearTimeout(debounceTimer);
+    if (search) search.value = '';
+    if (mapSearch) mapSearch.value = '';
+    applyFilters({ text: '', district: 'all', status: 'all', category: 'all', unitPrice: 'all', totalPrice: 'all' });
+  }
+  function handleClear() { resetAllFilters(); }
+  function handleSubmit(event) { event.preventDefault(); }
+  function handleMapMode(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-map-mode]') : null;
+    if (button) setMapMode(button.dataset.mapMode);
+  }
+  function handleSort(event) {
+    applyFilters({ sort: event.target ? event.target.value : 'default' });
+  }
+  function handleKeydown(event) {
+    if (event.key === 'Escape' && drawerToggle.getAttribute('aria-expanded') === 'true') {
+      closeDrawer(true);
+    }
+  }
+
+  /* ===== 地图筛选工具栏 ===== */
+  function toggleMapFilter() {
+    if (!mapFilterToggle || !mapFilterPanel) return;
+    var open = mapFilterToggle.getAttribute('aria-expanded') === 'true';
+    mapFilterToggle.setAttribute('aria-expanded', String(!open));
+    mapFilterPanel.hidden = open;
+    if (!open && mapSearch) mapSearch.focus();
+  }
+  function handleMapFilterChange(event) {
+    var target = event.target;
+    if (!target) return;
+    if (target === mapSearch) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function () { applyFilters({ text: mapSearch.value }); }, 120);
+    } else if (target === mapDistrict) {
+      applyFilters({ district: mapDistrict.value });
+    } else if (target === mapStatus) {
+      applyFilters({ status: mapStatus.value });
+    } else if (target === mapCategory) {
+      applyFilters({ category: mapCategory.value });
+    } else if (target === mapUnit) {
+      applyFilters({ unitPrice: mapUnit.value });
+    } else if (target === mapTotal) {
+      applyFilters({ totalPrice: mapTotal.value });
+    }
+  }
+  function populateCategoryOptions() {
+    if (!mapCategory) return;
+    var seen = {};
+    PROPERTIES.forEach(function (property) {
+      var value = property.category;
+      if (!value || seen[value]) return;
+      seen[value] = true;
+      var option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      mapCategory.appendChild(option);
+    });
+  }
+
+  if (search) search.addEventListener('input', handleSearch);
+  if (districts) districts.addEventListener('click', handleDistrict);
+  if (list) {
+    list.addEventListener('click', handleList);
+    list.addEventListener('mouseover', handleListHover);
+    list.addEventListener('mouseleave', handleListLeave);
+  }
+  if (clear) clear.addEventListener('click', handleClear);
+  if (form) form.addEventListener('submit', handleSubmit);
+  if (modeSwitch) modeSwitch.addEventListener('click', handleMapMode);
+  if (sortControl) sortControl.addEventListener('change', handleSort);
+  if (drawerToggle) drawerToggle.addEventListener('click', openDrawer);
+  if (drawerClose) drawerClose.addEventListener('click', function () { closeDrawer(true); });
+  document.addEventListener('keydown', handleKeydown);
+  if (mapFilterToggle && mapFilterPanel) mapFilterToggle.addEventListener('click', toggleMapFilter);
+  if (mapFilter) mapFilter.addEventListener('change', handleMapFilterChange);
+  if (mapSearch) mapSearch.addEventListener('input', handleMapFilterChange);
+  if (mapFilterReset) mapFilterReset.addEventListener('click', resetAllFilters);
+  populateCategoryOptions();
+
+  setMapMode('map');
+  applyFilters({}, { fit: false });
+  root.classList.add('is-map-enhanced');
+
+  /* 深链：?tower=1 一键直达「鸿屿长洲」全景大沙盘 */
+  if (location.search.indexOf('tower=1') > -1) {
+    setMapMode('satellite');
+    setTimeout(function () {
+      if (typeof openTowerViewer === 'function') openTowerViewer();
+    }, 500);
+  }
+})();
+  </script>
+</body>
+</html>

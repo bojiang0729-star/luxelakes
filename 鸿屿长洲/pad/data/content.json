@@ -1,0 +1,498 @@
+{
+  "schemaVersion": 1,
+  "pageId": "home_directory_location",
+  "location": {
+    "id": "project_location",
+    "background": "assets/location/location-bg@2x.png",
+    "tabs": [
+      {
+        "id": "1.1",
+        "figmaFrameId": "237:461",
+        "label": "双湾腹地",
+        "prefix": "",
+        "value": "双湾腹地",
+        "unit": "",
+        "caption": "三面环湖 自成一方静谧私域",
+        "display": "headline"
+      },
+      {
+        "id": "1.2",
+        "figmaFrameId": "3:6",
+        "label": "水岸环抱",
+        "prefix": "约",
+        "value": "2000",
+        "unit": "m",
+        "caption": "一湾藏一境，也藏水"
+      },
+      {
+        "id": "1.3",
+        "figmaFrameId": "29:678",
+        "label": "一线湖岸",
+        "prefix": "超",
+        "value": "500",
+        "unit": "m",
+        "caption": "一线湖景"
+      },
+      {
+        "id": "1.4",
+        "figmaFrameId": "49:137",
+        "label": "水域中庭",
+        "prefix": "约",
+        "value": "20万",
+        "unit": "m²",
+        "caption": "水域中庭"
+      },
+      {
+        "id": "1.5",
+        "figmaFrameId": "237:579",
+        "label": "手划船航道",
+        "prefix": "约",
+        "value": "1.8",
+        "unit": "km",
+        "caption": "手划船航道,下楼即享"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "id": "group_001",
+      "figmaNodeId": "53:7048",
+      "nameZh": "麒麟荟",
+      "nameEn": "Crystal Laputa",
+      "cover": "assets/images/projects/project-01.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_002",
+      "figmaNodeId": "53:7072",
+      "nameZh": "黑钰岛",
+      "nameEn": "BLACK JADE",
+      "cover": "assets/images/projects/project-02.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_003",
+      "figmaNodeId": "53:7084",
+      "nameZh": "浔岭",
+      "nameEn": "Park Area",
+      "cover": "assets/images/projects/project-03.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_004",
+      "figmaNodeId": "53:7078",
+      "nameZh": "隐漫汀",
+      "nameEn": "Coral Bay",
+      "cover": "assets/images/projects/project-04.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_005",
+      "figmaNodeId": "53:7054",
+      "nameZh": "黑珍珠",
+      "nameEn": "black pearl island",
+      "cover": "assets/images/projects/project-05.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_006",
+      "figmaNodeId": "53:7090",
+      "nameZh": "琥珀台",
+      "nameEn": "Amber Shore",
+      "cover": "assets/images/projects/project-06.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_007",
+      "figmaNodeId": "53:7132",
+      "nameZh": "天玑幻影",
+      "nameEn": "Phantasm Of Phecda",
+      "cover": "assets/images/projects/project-07.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_008",
+      "figmaNodeId": "53:7096",
+      "nameZh": "沚院",
+      "nameEn": "Rhythm Valley",
+      "cover": "assets/images/projects/project-08.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_009",
+      "figmaNodeId": "53:7138",
+      "nameZh": "天星月影",
+      "nameEn": "Star's Shadow",
+      "cover": "assets/images/projects/project-09.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_010",
+      "figmaNodeId": "53:7144",
+      "nameZh": "云镜",
+      "nameEn": "Elementary Bay",
+      "cover": "assets/images/projects/project-10.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_011",
+      "figmaNodeId": "53:7108",
+      "nameZh": "汀院",
+      "nameEn": "Stream Valley",
+      "cover": "assets/images/projects/project-11.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_012",
+      "figmaNodeId": "53:7060",
+      "nameZh": "W2悦溪",
+      "nameEn": "EUPHONY CREEK",
+      "cover": "assets/images/projects/project-12.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_013",
+      "figmaNodeId": "53:7150",
+      "nameZh": "水晶溪岸",
+      "nameEn": "Hyaline Bay",
+      "cover": "assets/images/projects/project-13.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_014",
+      "figmaNodeId": "53:7120",
+      "nameZh": "芸台漫汀",
+      "nameEn": "Strata Gardens",
+      "cover": "assets/images/projects/project-14.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_015",
+      "figmaNodeId": "53:9073",
+      "nameZh": "鸿鹄阁",
+      "nameEn": "Paramount Luxelakes",
+      "cover": "assets/images/projects/project-15.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_016",
+      "figmaNodeId": "179:3819",
+      "nameZh": "观澜",
+      "nameEn": "Rippleside",
+      "cover": "assets/images/projects/project-16.jpg",
+      "enabled": true,
+      "pastProject": {
+        "order": 3,
+        "slug": "guanlan",
+        "home": {
+          "figmaNodeId": "177:2727",
+          "background": "assets/past-projects/guanlan/home-bg.png",
+          "title": "assets/past-projects/guanlan/title.svg",
+          "titleRect": [1190.5, 702, 179, 162]
+        },
+        "map": {
+          "figmaNodeId": "177:2738",
+          "background": "assets/past-projects/guanlan/map-bg@3x.png",
+          "backgroundRect": [692, 55, 1202, 1474],
+          "north": "assets/past-projects/guanlan/north@3x.png",
+          "northRect": [2138, 1244, 111.926, 170.818],
+          "layers": [
+            { "id": "base", "label": "组团楼栋", "figmaNodeId": "177:3498", "asset": "assets/past-projects/guanlan/buildings-base-alpha@3x.png", "rect": [941.979, 181.107, 728.59, 1190.58] },
+            { "id": "4", "label": "4栋", "figmaNodeId": "186:2358", "asset": "assets/past-projects/guanlan/building-4-alpha@3x.png", "rect": [887.699, 1141.477, 173.921, 166.699] },
+            { "id": "8", "label": "8栋", "figmaNodeId": "186:2359", "asset": "assets/past-projects/guanlan/building-8-alpha@3x.png", "rect": [1059.67, 212.504, 176.044, 167.951] }
+          ]
+        },
+        "floorplan": {
+          "defaultId": "a1",
+          "options": [
+            { "id": "a1", "label": "A1", "figmaNodeId": "177:3262", "asset": "assets/past-projects/guanlan/floorplan-a1@3x.png" },
+            { "id": "a2", "label": "A2", "figmaNodeId": "177:3312", "asset": "assets/past-projects/guanlan/floorplan-a2@3x.png" },
+            { "id": "b1", "label": "B1", "figmaNodeId": "177:3362", "asset": "assets/past-projects/guanlan/floorplan-b1@3x.png" },
+            { "id": "b2", "label": "B2", "figmaNodeId": "177:3412", "asset": "assets/past-projects/guanlan/floorplan-b2@3x.png" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "group_017",
+      "figmaNodeId": "53:9055",
+      "nameZh": "隐溪岸",
+      "nameEn": "Peace Creek",
+      "cover": "assets/images/projects/project-17.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_018",
+      "figmaNodeId": "53:7102",
+      "nameZh": "鸿鹄岸",
+      "nameEn": "Bayside Skylines",
+      "cover": "assets/images/projects/project-18.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_019",
+      "figmaNodeId": "53:9043",
+      "nameZh": "长湖阙",
+      "nameEn": "Apogee Palace",
+      "cover": "assets/images/projects/project-19.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_020",
+      "figmaNodeId": "53:7162",
+      "nameZh": "五彩林堤",
+      "nameEn": "Colorful Forest",
+      "cover": "assets/images/projects/project-20.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_021",
+      "figmaNodeId": "177:2146",
+      "nameZh": "玄鸟湾",
+      "nameEn": "South Golden Bay",
+      "cover": "assets/images/projects/project-21.jpg",
+      "enabled": true,
+      "pastProject": {
+        "order": 2,
+        "slug": "xuanniaowan",
+        "home": {
+          "figmaNodeId": "176:1795",
+          "background": "assets/past-projects/xuanniaowan/home-bg.png",
+          "title": "assets/past-projects/xuanniaowan/title.svg",
+          "titleRect": [1103, 712, 353, 150]
+        },
+        "map": {
+          "figmaNodeId": "176:1806",
+          "background": "assets/past-projects/xuanniaowan/map-bg@3x.png",
+          "backgroundRect": [676.629, 88, 1170.371, 1468],
+          "north": "assets/past-projects/xuanniaowan/north@3x.png",
+          "northRect": [2138, 1244, 111.926, 170.818],
+          "layers": [
+            { "id": "base", "label": "组团楼栋", "figmaNodeId": "194:2658", "asset": "assets/past-projects/xuanniaowan/buildings-base-alpha@3x.png", "rect": [907.744, 471.019, 721.137, 727.827] },
+            { "id": "5", "label": "5栋", "figmaNodeId": "186:2345", "asset": "assets/past-projects/xuanniaowan/building-5-alpha@3x.png", "rect": [1131.285, 1171.42, 125.832, 87.832] },
+            { "id": "4", "label": "4栋", "figmaNodeId": "186:2353", "asset": "assets/past-projects/xuanniaowan/building-4-alpha@3x.png", "rect": [964.762, 1098.244, 119.569, 103.4] },
+            { "id": "6", "label": "6栋", "figmaNodeId": "186:2340", "asset": "assets/past-projects/xuanniaowan/building-6-alpha@3x.png", "rect": [1296.945, 1171.443, 124.89, 90.807] },
+            { "id": "3", "label": "3栋", "figmaNodeId": "186:2355", "asset": "assets/past-projects/xuanniaowan/building-3-alpha@3x.png", "rect": [915.518, 849.56, 81.172, 135.383] },
+            { "id": "2", "label": "2栋", "figmaNodeId": "186:2357", "asset": "assets/past-projects/xuanniaowan/building-2-alpha@3x.png", "rect": [915.518, 656.602, 81.172, 136.599] }
+          ]
+        },
+        "floorplan": {
+          "defaultId": "a",
+          "options": [
+            { "id": "a", "label": "A", "figmaNodeId": "176:1920", "asset": "assets/past-projects/xuanniaowan/floorplan-a@3x.png" },
+            { "id": "b", "label": "B", "figmaNodeId": "176:1970", "asset": "assets/past-projects/xuanniaowan/floorplan-b@3x.png" },
+            { "id": "c", "label": "C", "figmaNodeId": "176:2020", "asset": "assets/past-projects/xuanniaowan/floorplan-c@3x.png" },
+            { "id": "d", "label": "D", "figmaNodeId": "176:2067", "asset": "assets/past-projects/xuanniaowan/floorplan-d@3x.png" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "group_022",
+      "figmaNodeId": "53:9061",
+      "nameZh": "云龙阁",
+      "nameEn": "Crystal Cloud",
+      "cover": "assets/images/projects/project-22.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_023",
+      "figmaNodeId": "53:9085",
+      "nameZh": "沄洲",
+      "nameEn": "Cloud Island",
+      "cover": "assets/images/projects/project-23.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_024",
+      "figmaNodeId": "174:1429",
+      "nameZh": "长滩",
+      "nameEn": "Boracay",
+      "cover": "assets/images/projects/project-24.jpg",
+      "enabled": true,
+      "pastProject": {
+        "order": 1,
+        "slug": "longtan",
+        "home": {
+          "figmaNodeId": "172:216",
+          "background": "assets/past-projects/longtan/home-bg.png",
+          "title": "assets/past-projects/longtan/title.svg",
+          "titleRect": [1189, 619, 182, 146]
+        },
+        "map": {
+          "figmaNodeId": "172:227",
+          "background": "assets/past-projects/longtan/map-bg@3x.png",
+          "backgroundRect": [890, 113, 871, 1410],
+          "north": "assets/past-projects/longtan/north@3x.png",
+          "northRect": [2138, 1244, 111.926, 170.818],
+          "layers": [
+            { "id": "d", "label": "D栋", "figmaNodeId": "186:2332", "asset": "assets/past-projects/longtan/building-d-alpha@3x.png", "rect": [1154.221, 1184.586, 172.535, 142.609] },
+            { "id": "c-pair", "label": "C栋", "figmaNodeId": "186:278", "asset": "assets/past-projects/longtan/building-c-pair-alpha@3x.png", "rect": [1018.822, 188.325, 409.631, 302.503] },
+            { "id": "c-west", "label": "C栋", "figmaNodeId": "186:2331", "asset": "assets/past-projects/longtan/building-c-west-alpha@3x.png", "rect": [1018.141, 500.702, 147.897, 195.819] },
+            { "id": "b-south", "label": "B栋", "figmaNodeId": "186:2330", "asset": "assets/past-projects/longtan/building-b-south-alpha@3x.png", "rect": [1085.715, 890.953, 134.43, 199.233] },
+            { "id": "b-east", "label": "B栋", "figmaNodeId": "186:2334", "asset": "assets/past-projects/longtan/building-b-east-alpha@3x.png", "rect": [1388.906, 532.107, 119.659, 207.915] },
+            { "id": "a", "label": "A栋", "figmaNodeId": "186:275", "asset": "assets/past-projects/longtan/building-a-alpha@3x.png", "rect": [1317.549, 822.524, 158.568, 214.998] }
+          ]
+        },
+        "floorplan": {
+          "defaultId": "a",
+          "options": [
+            { "id": "a", "label": "A", "figmaNodeId": "172:279", "asset": "assets/past-projects/longtan/floorplan-a@3x.png" },
+            { "id": "b", "label": "B", "figmaNodeId": "174:1456", "asset": "assets/past-projects/longtan/floorplan-b@3x.png" },
+            { "id": "c1", "label": "C1", "figmaNodeId": "174:1613", "asset": "assets/past-projects/longtan/floorplan-c1@3x.png" },
+            { "id": "c2", "label": "C2", "figmaNodeId": "174:1656", "asset": "assets/past-projects/longtan/floorplan-c2@3x.png" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "group_025",
+      "figmaNodeId": "53:7126",
+      "nameZh": "雅集",
+      "nameEn": "Poetry Set",
+      "cover": "assets/images/projects/project-25.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_026",
+      "figmaNodeId": "53:7066",
+      "nameZh": "瀛洲岸",
+      "nameEn": "MEMORY CREEK",
+      "cover": "assets/images/projects/project-26.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_027",
+      "figmaNodeId": "53:7156",
+      "nameZh": "琥珀瀛洲",
+      "nameEn": "Amber Memory",
+      "cover": "assets/images/projects/project-27.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_028",
+      "figmaNodeId": "180:4350",
+      "nameZh": "沄岸",
+      "nameEn": "Cloud Shore",
+      "cover": "assets/images/projects/project-28.jpg",
+      "enabled": true,
+      "pastProject": {
+        "order": 4,
+        "slug": "yunan",
+        "home": {
+          "figmaNodeId": "179:3856",
+          "background": "assets/past-projects/yunan/home-bg.png",
+          "title": "assets/past-projects/yunan/title.svg",
+          "titleRect": [1178, 702, 204, 149]
+        },
+        "map": {
+          "figmaNodeId": "179:3867",
+          "background": "assets/past-projects/yunan/map-bg@3x.png",
+          "backgroundRect": [845, 108, 988, 1342],
+          "north": "assets/past-projects/yunan/north@3x.png",
+          "northRect": [2138, 1244, 111.926, 170.818],
+          "layers": [
+            { "id": "base", "label": "组团楼栋", "figmaNodeId": "180:4356", "asset": "assets/past-projects/yunan/buildings-base-alpha@3x.png", "rect": [918, 151, 815, 1219.104] },
+            { "id": "3", "label": "3栋", "figmaNodeId": "186:2369", "asset": "assets/past-projects/yunan/building-3-alpha@3x.png", "rect": [997.285, 480.363, 153.678, 276.014] },
+            { "id": "5", "label": "5栋", "figmaNodeId": "186:2367", "asset": "assets/past-projects/yunan/building-5-alpha@3x.png", "rect": [992.051, 775.906, 146.37, 306.372] }
+          ]
+        },
+        "floorplan": {
+          "defaultId": "d1",
+          "options": [
+            { "id": "d1", "label": "D1", "figmaNodeId": "179:4111", "asset": "assets/past-projects/yunan/floorplan-d1@3x.png" },
+            { "id": "d2", "label": "D2", "figmaNodeId": "180:4611", "asset": "assets/past-projects/yunan/floorplan-d2@3x.png" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "group_029",
+      "figmaNodeId": "53:9097",
+      "nameZh": "玥港",
+      "nameEn": "Yue Port",
+      "cover": "assets/images/projects/project-29.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_030",
+      "figmaNodeId": "53:9109",
+      "nameZh": "原溪岸",
+      "nameEn": "Elementary Creek",
+      "cover": "assets/images/projects/project-30.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_031",
+      "figmaNodeId": "53:9091",
+      "nameZh": "芸集",
+      "nameEn": "Paramount",
+      "cover": "assets/images/projects/project-31.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_032",
+      "figmaNodeId": "53:9103",
+      "nameZh": "香林堤",
+      "nameEn": "Colorful Forest",
+      "cover": "assets/images/projects/project-32.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_033",
+      "figmaNodeId": "53:9115",
+      "nameZh": "云树",
+      "nameEn": "Forest Walk",
+      "cover": "assets/images/projects/project-33.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_034",
+      "figmaNodeId": "53:9127",
+      "nameZh": "澜语溪岸",
+      "nameEn": "Lake Voices Bay",
+      "cover": "assets/images/projects/project-34.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_035",
+      "figmaNodeId": "53:9121",
+      "nameZh": "沉香谷",
+      "nameEn": "Aroma Valley",
+      "cover": "assets/images/projects/project-35.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_036",
+      "figmaNodeId": "53:9133",
+      "nameZh": "琉璃溪岸",
+      "nameEn": "Reflection Bay",
+      "cover": "assets/images/projects/project-36.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_037",
+      "figmaNodeId": "53:9151",
+      "nameZh": "蓝花屿",
+      "nameEn": "Blue Flowers Islet",
+      "cover": "assets/images/projects/project-37.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_038",
+      "figmaNodeId": "53:9145",
+      "nameZh": "白玉台",
+      "nameEn": "Magnolia Platform",
+      "cover": "assets/images/projects/project-38.jpg",
+      "enabled": true
+    },
+    {
+      "id": "group_039",
+      "figmaNodeId": "53:9139",
+      "nameZh": "黑蝶贝",
+      "nameEn": "Grage Shore",
+      "cover": "assets/images/projects/project-39.jpg",
+      "enabled": true
+    }
+  ]
+}

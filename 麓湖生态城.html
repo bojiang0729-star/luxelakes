@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麓湖生态城 LUKELAKES — 8300亩的一生之城</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Serif SC',system-ui,sans-serif;background:#f8fafc;overflow-x:hidden}
+:root{--lake:#0ea5e9;--lake-dark:#0369a1;--forest:#059669;--forest-light:#34d399;--slate:#1e293b;--slate-light:#475569;--gold:#f59e0b;--cream:#f0fdf4}
+.hero{position:relative;height:100vh;min-height:680px;background:linear-gradient(135deg,#0c1a2d 0%,#0f2a3e 30%,#1a3c4f 60%,#0d2137 100%);overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('hero-bg.jpg') center/cover no-repeat;opacity:.35;animation:heroZoom 20s ease-in-out infinite alternate}
+@keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.08)}}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,26,45,.1) 0%,rgba(12,26,45,.7) 60%,rgba(12,26,45,.95) 100%)}
+.hero .glass-card{background:rgba(255,255,255,.08);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:32px;max-width:700px}
+.section-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;color:var(--slate);letter-spacing:2px}
+.section-title .highlight{background:linear-gradient(135deg,var(--lake),var(--forest));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{font-size:1.05rem;color:var(--slate-light);max-width:600px;line-height:1.7}
+.resource-card{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#ffffff,#f0fdf4);box-shadow:0 8px 32px rgba(5,150,105,.08);transition:all .4s cubic-bezier(.4,0,.2,1);cursor:default}
+.resource-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(5,150,105,.15)}
+.resource-card .icon-wrap{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;margin-bottom:16px}
+.resource-card .num{font-size:2.5rem;font-weight:800;letter-spacing:-1px}
+.counter-card{text-align:center;padding:32px 20px;border-radius:20px;background:linear-gradient(160deg,rgba(14,165,233,.04) 0%,rgba(5,150,105,.04) 100%);border:1px solid rgba(14,165,233,.08);transition:all .3s}
+.counter-card:hover{background:linear-gradient(160deg,rgba(14,165,233,.08) 0%,rgba(5,150,105,.08) 100%);transform:scale(1.02)}
+.counter-card .num{font-size:clamp(2.2rem,4vw,3.2rem);font-weight:800;background:linear-gradient(135deg,var(--lake),var(--forest));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.counter-card .label{font-size:.95rem;color:var(--slate-light);margin-top:6px;font-weight:500}
+.amenity-card{position:relative;border-radius:24px;overflow:hidden;transition:all .5s cubic-bezier(.4,0,.2,1);cursor:default}
+.amenity-card .img-wrap{height:220px;overflow:hidden;position:relative}
+.amenity-card .img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.amenity-card:hover .img-wrap img{transform:scale(1.06)}
+.amenity-card .body{padding:24px;background:#fff}
+.amenity-card .icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:12px}
+.brand-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.brand-bar span{display:inline-block;padding:8px 18px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);font-size:.85rem;color:rgba(255,255,255,.85);font-weight:500;transition:all .3s}
+.brand-bar span:hover{background:rgba(255,255,255,.18);transform:translateY(-2px)}
+.ideal-section{position:relative;min-height:80vh;overflow:hidden;background:linear-gradient(180deg,#0f172a 0%,#1a2a3a 100%)}
+.ideal-bg{position:absolute;inset:0;background:url('ideal-bg.jpg') center/cover no-repeat fixed;opacity:.2}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f0fdf4}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--lake),var(--forest));border-radius:3px}
+#topNav{position:fixed;top:0;left:0;right:0;z-index:1000;transition:all .4s;padding:14px 0}
+#topNav.scrolled{background:rgba(15,23,42,.92);backdrop-filter:blur(20px);padding:8px 0;box-shadow:0 2px 30px rgba(0,0,0,.2)}
+.nav-link{color:rgba(255,255,255,.75);font-size:.9rem;font-weight:500;transition:color .3s;cursor:pointer;text-decoration:none}
+.nav-link:hover{color:#fff}
+#exploreBtn{position:fixed;bottom:32px;right:32px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--lake),var(--forest));color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(14,165,233,.35);transition:all .3s;display:none;align-items:center;justify-content:center}
+#exploreBtn:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(14,165,233,.45)}
+.footer-link{color:rgba(255,255,255,.6);transition:color .3s;text-decoration:none;font-size:.9rem}
+.footer-link:hover{color:#34d399}
+.btn-back{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .3s;text-decoration:none}
+.btn-back:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+/* 阻断子元素（AOS 入场位移等）撑宽文档，避免窄屏下布局视口被撑开 */
+section{overflow-x:clip}
+/* 窄屏：标题按视口缩放，避免「麓湖 LUKELAKES」被裁切 */
+@media(max-width:639px){
+.hero h1{font-size:clamp(1.75rem,8vw,3rem);letter-spacing:.02em;line-height:1.25;word-break:break-word}
+.hero .glass-card p{letter-spacing:.08em}
+}
+@media(max-width:640px){.hero .glass-card{padding:20px;margin:0 12px}.resource-card .num{font-size:2rem}#exploreBtn{bottom:20px;right:20px;width:48px;height:48px;font-size:18px}
+/* 可视化图表响应式 */
+#location .max-w-6xl .flex-col { gap: 32px !important; }
+#location .w-28 { width: 100px !important; height: 100px !important; }
+#location .w-32 { width: 120px !important; height: 120px !important; }
+#location .absolute.left-1/2 { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== FLOATING NAV ========== -->
+<nav id="topNav">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-emerald-400 text-xl font-bold">LUKELAKES</span>
+      <span class="text-white/40 text-xs hidden sm:inline">|</span>
+      <span class="text-white/50 text-xs hidden sm:inline">麓湖生态城</span>
+    </div>
+    <div class="hidden md:flex items-center gap-6">
+      <a href="#location" class="nav-link">城市定位</a>
+      <a href="#resources" class="nav-link">自然资源</a>
+      <a href="#data" class="nav-link">数据亮点</a>
+      <a href="#amenities" class="nav-link">生活配套</a>
+      <a href="#brand" class="nav-link">品牌实力</a>
+      <a href="#ideal" class="nav-link">理想兑现</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="成都豪宅板块地图.html" class="btn-back text-xs py-2 px-4 hidden sm:flex"><i class="fas fa-arrow-left"></i> 返回地图</a>
+      <a href="#ideal" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-5 rounded-full transition-all duration-300 hidden sm:inline-block">预约看房</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero flex items-center justify-center" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="relative z-10 text-center px-4 w-full max-w-5xl" data-aos="fade-up" data-aos-duration="1200">
+    <div class="glass-card mx-auto">
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-sky-400 to-emerald-400 flex items-center justify-center shadow-2xl">
+          <span class="text-white text-2xl font-bold">麓</span>
+        </div>
+      </div>
+      <h1 class="text-5xl sm:text-7xl md:text-8xl font-black text-white tracking-[6px] mb-3" style="font-family:'Noto Serif SC',serif">
+        麓湖 <span class="text-emerald-300">LUKELAKES</span>
+      </h1>
+      <p class="text-lg sm:text-xl text-white/70 font-light tracking-[4px] mb-6">8300亩的一生之城 · 理想的绿色兑现</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#location" class="inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-semibold py-3 px-8 rounded-full text-sm tracking-wider hover:shadow-lg hover:shadow-sky-500/25 transition-all duration-300">
+          探索麓湖 <i class="fas fa-arrow-down text-xs"></i>
+        </a>
+        <a href="成都豪宅板块地图.html" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border border-white/20 font-medium py-3 px-6 rounded-full text-sm hover:bg-white/20 transition-all duration-300">
+          <i class="fas fa-map-marked-alt"></i> 返回板块地图
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-center" data-aos="fade" data-aos-delay="2000">
+    <p class="text-white/40 text-xs mb-2 tracking-widest">SCROLL</p>
+    <div class="w-5 h-8 border-2 border-white/20 rounded-full mx-auto flex justify-center p-1">
+      <div class="w-1 h-2 bg-white/40 rounded-full animate-bounce"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 城市定位 ========== -->
+<section id="location" class="py-20 sm:py-28 px-4 relative" style="background:linear-gradient(180deg,#0f172a 0%,#f8fafc 30%)">
+  <!-- 成都地图虚线背景 -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none">
+    <div style="
+      position: absolute;
+      inset: 0;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 400\" width=\"400\" height=\"400\"><path d=\"M80,120 C100,80 180,60 250,100 C300,130 320,200 280,260 C240,320 150,340 100,300 C50,260 60,160 80,120 Z\" fill=\"none\" stroke=\"%231e293b\" stroke-width=\"2\" stroke-dasharray=\"4,4\"/><circle cx=\"200\" cy=\"160\" r=\"8\" fill=\"%231e293b\" opacity=\"0.3\"/><text x=\"200\" y=\"160\" text-anchor=\"middle\" dy=\"-12\" font-size=\"12\" fill=\"%231e293b\" opacity=\"0.5\">成都</text></svg>');
+      background-repeat: repeat;
+      background-size: 400px 400px;
+    "></div>
+  </div>
+  
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div data-aos="fade-up" class="text-center">
+      <span class="text-sky-500 text-sm font-semibold tracking-[4px] uppercase">— 01 城市定位</span>
+      <h2 class="section-title mt-3">成都第三中心 · <span class="highlight">8300亩的一生之城</span></h2>
+    </div>
+    
+    <!-- 文字内容区域 -->
+    <div class="grid md:grid-cols-2 gap-8 mt-12">
+      <!-- 8300亩的一生之城 -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50" data-aos="fade-right">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-lg mb-5"><i class="fas fa-mountain"></i></div>
+        <h3 class="text-xl font-bold text-slate-800 mb-3">8300亩的一生之城</h3>
+        <p class="text-slate-600 leading-relaxed text-sm mb-4">麓湖生态城，占地约8300亩，是成都乃至西南地区规模最大、理念最前沿的生态城市样本。它不是一座简单的住宅社区，而是一座「一生之城」——从孩童到长者，从工作到生活，从日常到节庆，每一个生命阶段都能在这里找到属于自己的理想生活场景。得天独厚的自然禀赋与前瞻性的城市规划，让「公园城市」的理想在这里照进现实。</p>
+        <div class="grid grid-cols-3 gap-3 mt-6">
+          <div class="text-center p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-100">
+            <div class="font-bold text-emerald-600 text-lg">8300<span class="text-xs">亩</span></div>
+            <div class="text-xs text-slate-600 mt-1">总规划面积</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-gradient-to-br from-sky-50 to-sky-100 border border-sky-100">
+            <div class="font-bold text-sky-600 text-lg">15<span class="text-xs">万</span></div>
+            <div class="text-xs text-slate-600 mt-1">居住产业人口</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-100">
+            <div class="font-bold text-amber-600 text-lg">1<span class="text-xs">座</span></div>
+            <div class="text-xs text-slate-600 mt-1">国际化新城</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 成都城市第三中心 -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50" data-aos="fade-left">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white text-lg mb-5"><i class="fas fa-city"></i></div>
+        <h3 class="text-xl font-bold text-slate-800 mb-3">成都城市第三中心</h3>
+        <p class="text-slate-600 leading-relaxed text-sm mb-4">麓湖生态城立足天府中轴，以生态为底、产业为核、生活为景，打造成都继传统中心与金融城之后的第三极城市中心，引领成都向南发展的未来城市范式。</p>
+        <p class="text-slate-600 leading-relaxed text-sm mb-4">作为成都「南拓」战略的核心区域，麓湖生态城承载着城市未来发展的关键使命。不同于传统城市中心的单一功能，麓湖以「产城一体」为理念，融合高端居住、总部经济、文化创意、生态休闲于一体，与天府新区中央商务区（CBP）交相辉映，共同构建成都面向世界的新名片。</p>
+        <div class="flex flex-wrap gap-2 mt-6">
+          <span class="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-100 to-sky-200 text-sky-700 font-medium border border-sky-200">传统中心→</span>
+          <span class="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700 font-medium border border-purple-200">金融城→</span>
+          <span class="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-700 font-medium border border-emerald-200">麓湖新极</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 可视化图表：垂直演进时间轴 + 三个圆圈 -->
+    <div class="mt-16" data-aos="fade-up">
+      <div class="text-center mb-8">
+        <h3 class="text-lg font-bold text-slate-800 mb-2">成都城市中心演进图谱</h3>
+        <p class="text-slate-500 text-sm max-w-2xl mx-auto">从传统商圈到金融城，再到麓湖生态城——成都城市中心的迭代与升华</p>
+      </div>
+      
+      <div class="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 lg:gap-20 max-w-4xl mx-auto">
+        <!-- 垂直时间轴线 -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-slate-300 to-slate-400 opacity-30 hidden md:block"></div>
+        
+        <!-- 传统商圈 -->
+        <div class="flex flex-col items-center text-center w-48 md:w-auto" data-aos="fade-up" data-aos-delay="0">
+          <div class="relative">
+            <div class="w-28 h-28 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4">
+              <div class="text-center">
+                <div class="text-slate-600 text-lg font-bold">传统商圈</div>
+                <div class="text-slate-400 text-xs mt-1">太古里·春熙商圈</div>
+              </div>
+            </div>
+            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-slate-500 text-xs">第一代</div>
+          </div>
+          <p class="text-slate-600 text-sm mt-4 max-w-xs">成都传统商业文化中心，承载千年商贸底蕴与市井烟火</p>
+        </div>
+        
+        <!-- 向下箭头 -->
+        <div class="flex flex-col items-center hidden md:flex" data-aos="fade-up" data-aos-delay="100">
+          <div class="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[16px] border-l-transparent border-r-transparent border-t-slate-300 mb-4"></div>
+          <div class="text-slate-400 text-xs mb-4">城市迭代</div>
+        </div>
+        
+        <!-- 金融城 -->
+        <div class="flex flex-col items-center text-center w-48 md:w-auto" data-aos="fade-up" data-aos-delay="200">
+          <div class="relative">
+            <div class="w-28 h-28 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 border-4 border-white shadow-lg flex items-center justify-center mb-4">
+              <div class="text-center">
+                <div class="text-blue-600 text-lg font-bold">金融城</div>
+                <div class="text-blue-400 text-xs mt-1">金融城商圈</div>
+              </div>
+            </div>
+            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-slate-500 text-xs">第二代</div>
+          </div>
+          <p class="text-slate-600 text-sm mt-4 max-w-xs">成都现代金融商务中心，集聚资本、人才与全球视野</p>
+        </div>
+        
+        <!-- 向下箭头 -->
+        <div class="flex flex-col items-center hidden md:flex" data-aos="fade-up" data-aos-delay="300">
+          <div class="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[16px] border-l-transparent border-r-transparent border-t-slate-300 mb-4"></div>
+          <div class="text-slate-400 text-xs mb-4">未来进化</div>
+        </div>
+        
+        <!-- 麓湖水城商圈 -->
+        <div class="flex flex-col items-center text-center w-48 md:w-auto" data-aos="fade-up" data-aos-delay="400">
+          <div class="relative">
+            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 border-6 border-emerald-100 shadow-xl shadow-emerald-200/50 flex items-center justify-center mb-4 animate-pulse">
+              <div class="text-center">
+                <div class="text-emerald-600 text-xl font-bold">未来新极</div>
+                <div class="text-emerald-500 text-sm mt-1">麓湖水城商圈</div>
+                <div class="mt-2">
+                  <span class="inline-block px-2 py-1 bg-emerald-500 text-white text-xs rounded-full">✨ 青绿色高亮</span>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+              <div class="flex items-center gap-1">
+                <div class="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[10px] border-l-transparent border-r-transparent border-t-emerald-400"></div>
+                <span class="text-emerald-500 text-xs font-medium">第三代</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-emerald-600 text-sm mt-4 max-w-xs font-medium">产城一体·生态融合·未来范式，引领成都城市发展的第三极中心</p>
+        </div>
+      </div>
+      
+      <!-- 图表说明 -->
+      <div class="mt-12 pt-6 border-t border-slate-100">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="text-center md:text-left">
+            <h4 class="text-sm font-bold text-slate-700 mb-1">垂直演进时间轴</h4>
+            <p class="text-slate-500 text-xs">展示成都城市中心从传统到未来的迭代路径</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded-full bg-slate-200"></div>
+              <span class="text-slate-500 text-xs">传统商圈</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded-full bg-blue-100"></div>
+              <span class="text-slate-500 text-xs">金融城</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded-full bg-emerald-100 border border-emerald-200"></div>
+              <span class="text-slate-500 text-xs">未来新极</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 核心自然资源 ========== -->
+<section id="resources" class="py-20 sm:py-28 px-4 bg-white">
+  <div class="max-w-6xl mx-auto">
+    <div data-aos="fade-up" class="text-center">
+      <span class="text-emerald-500 text-sm font-semibold tracking-[4px] uppercase">— 02 核心自然资源</span>
+      <h2 class="section-title mt-3">天赋 <span class="highlight">自然</span> · 不可复制</h2>
+      <p class="section-sub mx-auto mt-3">8300亩土地上，水与绿交织而成的生态画卷</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+      <div class="resource-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="p-6">
+          <div class="icon-wrap bg-gradient-to-br from-sky-400 to-sky-600"><i class="fas fa-water"></i></div>
+          <div class="num text-sky-500">2100<span class="text-lg font-medium text-slate-400">亩</span></div>
+          <h4 class="font-bold text-slate-800 text-lg mt-2">麓湖水域</h4>
+          <p class="text-slate-500 text-sm mt-1 leading-relaxed">成都主城最大的人工淡水湖，水质常年保持Ⅱ类标准，是麓湖生态城最核心的自然资产。</p>
+        </div>
+      </div>
+      <div class="resource-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="p-6">
+          <div class="icon-wrap bg-gradient-to-br from-emerald-400 to-emerald-600"><i class="fas fa-tree"></i></div>
+          <div class="num text-emerald-500">25<span class="text-lg font-medium text-slate-400">座</span></div>
+          <h4 class="font-bold text-slate-800 text-lg mt-2">公园群落</h4>
+          <p class="text-slate-500 text-sm mt-1 leading-relaxed">25座主题公园分布其间，形成「公园之中建城市」的独特格局，人均绿化面积远超国际标准。</p>
+        </div>
+      </div>
+      <div class="resource-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="p-6">
+          <div class="icon-wrap bg-gradient-to-br from-cyan-400 to-cyan-600"><i class="fas fa-mountain"></i></div>
+          <div class="num text-cyan-500">35<span class="text-lg font-medium text-slate-400">KM</span></div>
+          <h4 class="font-bold text-slate-800 text-lg mt-2">湖滨水岸线</h4>
+          <p class="text-slate-500 text-sm mt-1 leading-relaxed">绵延35公里的湖滨水岸线，串联起湖岛、码头、湿地与公园，构筑「水城共生」的滨水生活范本。</p>
+        </div>
+      </div>
+      <div class="resource-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="p-6">
+          <div class="icon-wrap bg-gradient-to-br from-amber-400 to-orange-500"><i class="fas fa-running"></i></div>
+          <div class="num text-amber-500">8.8<span class="text-lg font-medium text-slate-400">公里</span></div>
+          <h4 class="font-bold text-slate-800 text-lg mt-2">规划跑道</h4>
+          <p class="text-slate-500 text-sm mt-1 leading-relaxed">8.8公里环湖跑步道贯穿全域，让运动与自然零距离，晨跑暮跑皆可尽览湖光山色。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 数据亮点（计数器） ========== -->
+<section id="data" class="py-20 sm:py-28 px-4" style="background:linear-gradient(135deg,#0c1a2d 0%,#16213e 50%,#0d2137 100%)">
+  <div class="max-w-6xl mx-auto">
+    <div data-aos="fade-up" class="text-center">
+      <span class="text-sky-400 text-sm font-semibold tracking-[4px] uppercase">— 03 数据亮点</span>
+      <h2 class="section-title mt-3 text-white">数字背后的 <span style="background:linear-gradient(135deg,#38bdf8,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">伟大蓝图</span></h2>
+      <p class="text-slate-400 max-w-2xl mx-auto mt-3 text-sm">每一个数字，都是麓湖「一生之城」承诺的坚实注脚</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-14">
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="counter" data-target="15" data-suffix="万">0</div>
+        <div class="label">产城人口</div>
+      </div>
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="counter" data-target="150" data-suffix="万㎡">0</div>
+        <div class="label">商业体量</div>
+      </div>
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="counter" data-target="280" data-suffix="+">0</div>
+        <div class="label">商家入驻</div>
+      </div>
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="counter" data-target="12000" data-suffix="+">0</div>
+        <div class="label">家庭选择</div>
+      </div>
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="400">
+        <div class="counter" data-target="44" data-suffix="个">0</div>
+        <div class="label">集团持续交付</div>
+      </div>
+      <div class="counter-card" data-aos="fade-up" data-aos-delay="500">
+        <div class="counter" data-target="40" data-suffix="%">0</div>
+        <div class="label">入住率</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 生活配套 ========== -->
+<section id="amenities" class="py-20 sm:py-28 px-4 bg-white">
+  <div class="max-w-6xl mx-auto">
+    <div data-aos="fade-up" class="text-center">
+      <span class="text-amber-500 text-sm font-semibold tracking-[4px] uppercase">— 04 生活配套</span>
+      <h2 class="section-title mt-3">丰盛 <span class="highlight">日常</span> · 一生之城</h2>
+      <p class="section-sub mx-auto mt-3">艺术、教育、商业、社区——每一个维度，皆以极致标准配置</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+      <div class="amenity-card shadow-md hover:shadow-xl" data-aos="fade-up">
+        <div class="img-wrap">
+          <img src="https://images.unsplash.com/photo-1561214078-f3247647fc5e?w=600&q=80" alt="艺术馆" loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <div class="icon bg-gradient-to-br from-violet-500 to-fuchsia-500"><i class="fas fa-palette"></i></div>
+          </div>
+        </div>
+        <div class="body">
+          <h4 class="font-bold text-slate-800 text-lg">艺术·A4美术馆群落</h4>
+          <p class="text-slate-500 text-sm mt-2 leading-relaxed"><strong class="text-slate-700">4大艺术馆</strong> — A4美术馆、A4国际驻留艺术中心、麓湖·水上剧场、麓客岛艺术中心<br><strong class="text-slate-700">全年10+场展览</strong> — 国际当代艺术、建筑展、设计展、儿童艺术节</p>
+        </div>
+      </div>
+      <div class="amenity-card shadow-md hover:shadow-xl" data-aos="fade-up" data-aos-delay="100">
+        <div class="img-wrap">
+          <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="社区活动" loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <div class="icon bg-gradient-to-br from-sky-500 to-cyan-500"><i class="fas fa-calendar-alt"></i></div>
+          </div>
+        </div>
+        <div class="body">
+          <h4 class="font-bold text-slate-800 text-lg">社区·全年7000+场活动</h4>
+          <p class="text-slate-500 text-sm mt-2 leading-relaxed"><strong class="text-slate-700">全年7000+场社群活动</strong>，从龙舟节、渔获节到麓湖春晚，从户外音乐节到亲子工作坊，打造中国最具活力的社区文化生态。</p>
+        </div>
+      </div>
+      <div class="amenity-card shadow-md hover:shadow-xl" data-aos="fade-up" data-aos-delay="200">
+        <div class="img-wrap">
+          <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80" alt="学校" loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <div class="icon bg-gradient-to-br from-emerald-500 to-teal-500"><i class="fas fa-graduation-cap"></i></div>
+          </div>
+        </div>
+        <div class="body">
+          <h4 class="font-bold text-slate-800 text-lg">教育·K9全龄教育</h4>
+          <p class="text-slate-500 text-sm mt-2 leading-relaxed"><strong class="text-slate-700">11所学校</strong> — K9全龄教育体系覆盖幼儿园至初中，引入成都实验小学、天府七中等优质教育资源，构筑「家门口的15年成长之路」。</p>
+        </div>
+      </div>
+      <div class="amenity-card shadow-md hover:shadow-xl" data-aos="fade-up" data-aos-delay="300">
+        <div class="img-wrap">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" alt="商业" loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <div class="icon bg-gradient-to-br from-amber-500 to-orange-500"><i class="fas fa-store"></i></div>
+          </div>
+        </div>
+        <div class="body">
+          <h4 class="font-bold text-slate-800 text-lg">商业·280+品牌商家</h4>
+          <p class="text-slate-500 text-sm mt-2 leading-relaxed"><strong class="text-slate-700">150万㎡商业体量</strong>，包含麓坊中心、麓镇、CPI水上商业街等多元商业场景。<strong class="text-slate-700">280+品牌商家</strong>入驻，涵盖高端零售、特色餐饮、休闲娱乐。</p>
+        </div>
+      </div>
+    </div>
+    <div data-aos="fade-up" class="mt-12 bg-slate-50 rounded-2xl p-8">
+      <h4 class="text-center text-sm font-semibold text-slate-500 tracking-wider mb-6">— 280+ 入驻品牌（部分展示） —</h4>
+      <div class="flex flex-wrap justify-center gap-3">
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">星巴克</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">喜茶</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">奈雪的茶</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">必胜客</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">肯德基</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">麦当劳</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">盒马鲜生</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">言几又</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">蔚来中心</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">理想汽车</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">柴门餐饮</span>
+        <span class="px-4 py-2 bg-white rounded-lg text-slate-700 text-sm font-medium shadow-sm border border-slate-100">大鸭梨</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 品牌实力 ========== -->
+<section id="brand" class="py-20 sm:py-28 px-4" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%)">
+  <div class="max-w-6xl mx-auto">
+    <div data-aos="fade-up" class="text-center">
+      <span class="text-amber-400 text-sm font-semibold tracking-[4px] uppercase">— 05 品牌实力</span>
+      <h2 class="section-title mt-3 text-white">全球视野 · <span style="background:linear-gradient(135deg,#38bdf8,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">大师执笔</span></h2>
+      <p class="text-slate-400 max-w-xl mx-auto mt-3 text-sm">汇聚全球智慧，以极致匠心兑现一生之城的承诺</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 mt-12">
+      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10" data-aos="fade-right">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-2xl"><i class="fas fa-globe-asia"></i></div>
+          <div>
+            <div class="text-white text-3xl font-bold">200+</div>
+            <div class="text-slate-400 text-sm">国际机构</div>
+          </div>
+          <div class="w-px h-12 bg-white/10 mx-4"></div>
+          <div>
+            <div class="text-white text-3xl font-bold">300+</div>
+            <div class="text-slate-400 text-sm">设计大师</div>
+          </div>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">麓湖汇聚全球<strong class="text-white">200余家国际机构</strong>、<strong class="text-white">300余位设计大师</strong>参与规划与设计，从城市规划、建筑设计到景观生态，每一个细节都由世界顶尖团队联袂打造。这是中国罕见的全球化设计阵容，也是麓湖品质自信的根本基石。</p>
+        <div class="grid grid-cols-3 gap-3 mt-6">
+          <div class="text-center p-3 rounded-xl bg-white/5 border border-white/10"><div class="font-bold text-emerald-400 text-sm">万华集团</div><div class="text-xs text-slate-500 mt-1">开发运营</div></div>
+          <div class="text-center p-3 rounded-xl bg-white/5 border border-white/10"><div class="font-bold text-emerald-400 text-sm">美国AECOM</div><div class="text-xs text-slate-500 mt-1">规划设计</div></div>
+          <div class="text-center p-3 rounded-xl bg-white/5 border border-white/10"><div class="font-bold text-emerald-400 text-sm">新加坡WOHA</div><div class="text-xs text-slate-500 mt-1">建筑设计</div></div>
+        </div>
+      </div>
+
+      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10" data-aos="fade-left">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-2xl"><i class="fas fa-building"></i></div>
+          <div>
+            <div class="text-white text-3xl font-bold">44个</div>
+            <div class="text-slate-400 text-sm">集团持续交付</div>
+          </div>
+          <div class="w-px h-12 bg-white/10 mx-4"></div>
+          <div>
+            <div class="text-white text-3xl font-bold">40%</div>
+            <div class="text-slate-400 text-sm">入住率</div>
+          </div>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">十年营城，<strong class="text-white">44个组团</strong>相继交付，入住率已达<strong class="text-white">40%</strong>，成为成都高端居住区的标杆。每一栋建筑、每一处景观，都是「理想兑现」最有力的证明。从图纸到实景，麓湖正将「一生之城」的承诺，一步步呈现在世人面前。</p>
+        <div class="flex flex-wrap gap-2 mt-6">
+          <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">已交付组团</span>
+          <span class="text-xs px-3 py-1.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">持续开发</span>
+          <span class="text-xs px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">品质标杆</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 理想兑现（情感收尾） ========== -->
+<section id="ideal" class="ideal-section flex items-center justify-center px-4">
+  <div class="ideal-bg"></div>
+  <div class="relative z-10 text-center max-w-4xl" data-aos="fade-up">
+    <span class="text-emerald-400 text-sm font-semibold tracking-[4px] uppercase">— 06 理想兑现</span>
+    <h2 class="text-4xl sm:text-6xl font-bold text-white mt-6 mb-6 tracking-wide" style="font-family:'Noto Serif SC',serif">
+      从理想到现实<br>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-sky-300">麓湖的绿色兑现</span>
+    </h2>
+    <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+      十年前的一张蓝图，如今已成一座活生生的绿色之城。从2100亩清澈湖面，到25座生机盎然的公园；从顶尖设计大咖的纸上构想，到44个品质组团的实景绽放——<strong class="text-white">麓湖生态城</strong>用时间证明了什么是真正的<strong class="text-emerald-300">「理想兑现」</strong>。
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a href="#hero" class="inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-semibold py-3 px-8 rounded-full text-sm tracking-wider hover:shadow-lg hover:shadow-sky-500/25 transition-all duration-300">
+        <i class="fas fa-arrow-up"></i> 回到顶部
+      </a>
+      <a href="成都豪宅板块地图.html" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border border-white/20 font-medium py-3 px-6 rounded-full text-sm hover:bg-white/20 transition-all duration-300">
+        <i class="fas fa-map-marked-alt"></i> 返回板块地图
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="bg-slate-900 px-4 py-16 border-t border-white/5">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-bold">麓</div>
+          <div><span class="text-white font-bold text-lg">LUKELAKES</span><br><span class="text-slate-400 text-xs">麓湖生态城</span></div>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed max-w-md">成都·天府新区·麓湖生态城<br>8300亩的一生之城 · 理想的绿色兑现</p>
+        <div class="flex gap-4 mt-6">
+          <span class="footer-link text-sm"><i class="fab fa-weixin mr-1"></i> 微信公众号：麓湖生态城</span>
+        </div>
+      </div>
+      <div>
+        <h5 class="text-white font-semibold text-sm mb-4 tracking-wider">快速导航</h5>
+        <div class="flex flex-col gap-3">
+          <a href="#location" class="footer-link">城市定位</a>
+          <a href="#resources" class="footer-link">自然资源</a>
+          <a href="#data" class="footer-link">数据亮点</a>
+          <a href="#amenities" class="footer-link">生活配套</a>
+          <a href="#brand" class="footer-link">品牌实力</a>
+        </div>
+      </div>
+      <div>
+        <h5 class="text-white font-semibold text-sm mb-4 tracking-wider">联系我们</h5>
+        <p class="text-slate-400 text-sm leading-relaxed">地址：成都市天府新区<br>麓湖生态城·展示中心</p>
+        <a href="#ideal" class="mt-4 inline-block bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition-all duration-300">
+          预约看房 <i class="fas fa-arrow-right ml-1 text-xs"></i>
+        </a>
+      </div>
+    </div>
+    <div class="border-t border-white/5 mt-10 pt-6 text-center">
+      <p class="text-slate-500 text-xs">© 2026 麓湖生态城 LUKELAKES · 本页面仅作为信息展示，数据来源于公开资料整理</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== 浮动按钮 ========== -->
+<button id="exploreBtn" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})" title="回到顶部">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- ========== SCRIPTS ========== -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+// === AOS Init (每次滚动进入都触发) ===
+AOS.init({
+  duration:800,
+  once:false,
+  offset:80,
+  easing:'ease-out-cubic'
+});
+
+// === Counter Animation ===
+function animateCounters(){
+  document.querySelectorAll('.counter').forEach(function(el){
+    var t=+el.dataset.target,s=el.dataset.suffix||'';
+    el.textContent='0';  // 重置为0
+    var dur=2000,start=null;
+    function step(ts){
+      if(!start)start=ts;
+      var p=Math.min((ts-start)/dur,1);
+      var cur=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+      el.textContent=Math.round(cur*t)+s;
+      if(p<1)requestAnimationFrame(step);
+      else el.textContent=t+s;
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// === Intersection Observer for Counters (每次可见都重播) ===
+var counterObserver=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      setTimeout(animateCounters,300);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('#data').forEach(function(s){counterObserver.observe(s)});
+
+// === Nav Scroll Effect ===
+window.addEventListener('scroll',function(){
+  var nav=document.getElementById('topNav');
+  nav.classList.toggle('scrolled',window.scrollY>80);
+  var btn=document.getElementById('exploreBtn');
+  btn.style.display=window.scrollY>window.innerHeight?'flex':'none';
+});
+
+// === Active Nav Link ===
+var sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',function(){
+  var scrollY=window.scrollY+120;
+  var current='';
+  sections.forEach(function(s){
+    if(s.offsetTop<=scrollY&&s.offsetTop+s.offsetHeight>scrollY)current=s.id;
+  });
+  document.querySelectorAll('.nav-link').forEach(function(a){
+    a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+  });
+});
+</script>
+</body>
+</html>

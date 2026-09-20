@@ -1,0 +1,180 @@
+<svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A017" />
+      <stop offset="40%" stop-color="#E8C44A" />
+      <stop offset="70%" stop-color="#D4A017" />
+      <stop offset="100%" stop-color="#A67C00" />
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1F2C" />
+      <stop offset="100%" stop-color="#050d14" />
+    </linearGradient>
+    <linearGradient id="auraGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#D4A017" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#D4A017" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 深色背景 -->
+  <rect width="500" height="400" fill="url(#bgGrad)" rx="16"/>
+  
+  <!-- 光晕 -->
+  <circle cx="250" cy="190" r="160" fill="url(#auraGrad)"/>
+  <circle cx="250" cy="190" r="130" stroke="#D4A017" stroke-width="0.4" opacity="0.12"/>
+  <circle cx="250" cy="190" r="100" stroke="#D4A017" stroke-width="0.3" opacity="0.08"/>
+  
+  <!-- 十字准星装饰（极简奢华点睛） -->
+  <line x1="250" y1="30" x2="250" y2="60" stroke="#D4A017" stroke-width="0.5" opacity="0.15"/>
+  <line x1="250" y1="320" x2="250" y2="350" stroke="#D4A017" stroke-width="0.5" opacity="0.15"/>
+  <line x1="100" y1="190" x2="130" y2="190" stroke="#D4A017" stroke-width="0.5" opacity="0.15"/>
+  <line x1="370" y1="190" x2="400" y2="190" stroke="#D4A017" stroke-width="0.5" opacity="0.15"/>
+
+  <!-- ==================== 主要鹿头设计 ==================== -->
+  <g stroke="url(#goldGrad)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    
+    <!-- 
+      设计理念：
+      侧颜的鹿头，极简线条勾勒
+      鹿角如树枝般自然伸展，有主干的粗砺感
+      面部线条干净利落，突出优雅气质
+      参考：Hermès、Cartier 等奢侈品牌的动物图腾
+    -->
+    
+    <!-- === 左鹿角（后侧）=== -->
+    <!-- 主干 -->
+    <path d="M 215 165 
+             C 208 130, 190 95, 165 72 
+             C 148 55, 125 42, 105 36 
+             C 90 32, 78 34, 68 40
+             C 62 44, 58 48, 55 54" 
+          stroke-width="1.2" opacity="0.85"/>
+    
+    <!-- 分支1 - 低位前伸 -->
+    <path d="M 188 105 
+             C 180 95, 172 90, 162 88" 
+          stroke-width="0.9" opacity="0.75"/>
+    
+    <!-- 分支2 - 中位上扬 -->
+    <path d="M 155 68 
+             C 148 60, 140 55, 132 52" 
+          stroke-width="0.9" opacity="0.75"/>
+    
+    <!-- 分支3 - 高位 -->
+    <path d="M 120 46 
+             C 115 40, 112 36, 108 34" 
+          stroke-width="0.8" opacity="0.7"/>
+    
+    <!-- 分支4 - 顶端小叉 -->
+    <path d="M 72 44 
+             C 68 48, 64 50, 60 50" 
+          stroke-width="0.7" opacity="0.6"/>
+
+    <!-- === 右鹿角（前侧）=== -->
+    <!-- 主干 -->
+    <path d="M 285 165 
+             C 292 130, 310 95, 335 72 
+             C 352 55, 375 42, 395 36 
+             C 410 32, 422 34, 432 40
+             C 438 44, 442 48, 445 54" 
+          stroke-width="1.2" opacity="0.85"/>
+    
+    <!-- 分支1 -->
+    <path d="M 312 105 
+             C 320 95, 328 90, 338 88" 
+          stroke-width="0.9" opacity="0.75"/>
+    
+    <!-- 分支2 -->
+    <path d="M 345 68 
+             C 352 60, 360 55, 368 52" 
+          stroke-width="0.9" opacity="0.75"/>
+    
+    <!-- 分支3 -->
+    <path d="M 380 46 
+             C 385 40, 388 36, 392 34" 
+          stroke-width="0.8" opacity="0.7"/>
+    
+    <!-- 分支4 -->
+    <path d="M 428 44 
+             C 432 48, 436 50, 440 50" 
+          stroke-width="0.7" opacity="0.6"/>
+    
+    <!-- === 面部轮廓 === -->
+    <!-- 左脸 -->
+    <path d="M 215 165 
+             C 215 145, 220 130, 228 118 
+             C 234 108, 240 100, 244 94 
+             C 246 90, 248 86, 248 82" 
+          stroke-width="1"/>
+    
+    <!-- 右脸 -->
+    <path d="M 285 165 
+             C 285 145, 280 130, 272 118 
+             C 266 108, 260 100, 256 94 
+             C 254 90, 252 86, 252 82" 
+          stroke-width="1"/>
+    
+    <!-- 额头到鼻梁 -->
+    <path d="M 240 100 C 243 94, 247 90, 250 86 C 253 90, 257 94, 260 100" 
+          stroke-width="0.8" opacity="0.6"/>
+    
+    <!-- === 鼻子 === -->
+    <!-- 鼻梁 -->
+    <path d="M 250 86 C 250 90, 248 95, 246 100 C 244 105, 242 108, 240 110" 
+          stroke-width="0.9"/>
+    <path d="M 250 86 C 250 90, 252 95, 254 100 C 256 105, 258 108, 260 110" 
+          stroke-width="0.9"/>
+    
+    <!-- 鼻尖 -->
+    <path d="M 240 110 C 243 114, 247 116, 250 116 C 253 116, 257 114, 260 110" 
+          stroke-width="1.1"/>
+    
+    <!-- 鼻孔装饰线 -->
+    <path d="M 245 113 C 247 113, 248 114, 248 115" stroke-width="0.6" opacity="0.4"/>
+    <path d="M 252 113 C 253 113, 255 114, 255 115" stroke-width="0.6" opacity="0.4"/>
+    
+    <!-- 嘴线 -->
+    <path d="M 246 116 C 247 118, 249 119, 250 119 C 251 119, 253 118, 254 116" 
+          stroke-width="0.7" opacity="0.5"/>
+    
+    <!-- === 眼睛 === -->
+    <!-- 左眼 - 杏仁形 -->
+    <path d="M 235 98 C 237 96, 240 96, 242 98 C 240 100, 237 100, 235 98 Z" 
+          stroke-width="0.8" fill="url(#goldGrad)" fill-opacity="0.3"/>
+    
+    <!-- 右眼 -->
+    <path d="M 258 98 C 260 96, 263 96, 265 98 C 263 100, 260 100, 258 98 Z" 
+          stroke-width="0.8" fill="url(#goldGrad)" fill-opacity="0.3"/>
+    
+    <!-- 瞳孔 -->
+    <circle cx="239" cy="98" r="1" fill="#D4A017" stroke="none" opacity="0.8"/>
+    <circle cx="261" cy="98" r="1" fill="#D4A017" stroke="none" opacity="0.8"/>
+    
+    <!-- === 耳朵 === -->
+    <path d="M 228 122 C 222 112, 220 106, 224 102 C 228 100, 232 104, 232 108" 
+          stroke-width="0.8"/>
+    <path d="M 272 122 C 278 112, 280 106, 276 102 C 272 100, 268 104, 268 108" 
+          stroke-width="0.8"/>
+    
+    <!-- 耳内装饰 -->
+    <path d="M 226 114 C 224 108, 225 105, 227 104" stroke-width="0.4" opacity="0.3"/>
+    <path d="M 274 114 C 276 108, 275 105, 273 104" stroke-width="0.4" opacity="0.3"/>
+    
+    <!-- === 颈部线条 === -->
+    <path d="M 230 165 C 235 185, 238 200, 238 215" stroke-width="0.6" opacity="0.4"/>
+    <path d="M 270 165 C 265 185, 262 200, 262 215" stroke-width="0.6" opacity="0.4"/>
+    
+    <!-- === 鹿角之间的连接弧（皇冠感）=== -->
+    <path d="M 215 165 C 225 158, 235 155, 250 154 C 265 155, 275 158, 285 165" 
+          stroke-width="0.5" opacity="0.3"/>
+    
+  </g>
+  
+  <!-- 品牌文字 -->
+  <g opacity="0.15">
+    <text x="250" y="370" text-anchor="middle" fill="#D4A017" 
+          font-family="Cinzel, serif" font-size="11" letter-spacing="10">
+      沉香谷
+    </text>
+  </g>
+</svg>

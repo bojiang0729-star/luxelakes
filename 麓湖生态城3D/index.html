@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f1216" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e8a25a'/%3E%3Cpath d='M4 26h24L20 8l-5 9-3-4z' fill='%23181a20'/%3E%3C/svg%3E" />
+    <title>成都麓湖生态城 Luxelakes · 现代 3D 数字沙盘</title>
+    <style>
+      #backmap{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;font-family:var(--mono,monospace);font-size:11px;letter-spacing:.12em;color:var(--ink-dim,#9d968b);border:1px solid var(--line,#ffecd61a);border-radius:5px;padding:5px 9px;transition:all .2s;flex:0 0 auto}
+      #backmap:hover{color:var(--warm,#e8a25a);border-color:#e8a25a59;background:var(--warm-dim,#e8a25a29)}
+      #backmap svg{width:13px;height:13px}
+      .style-switch{display:flex;gap:3px;border:1px solid var(--line,#ffecd61a);background:#14171de6;border-radius:8px;padding:3px;flex:0 0 auto}
+      .style-switch a{display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;color:var(--ink-faint,#6d6862);font-size:10.5px;font-family:var(--mono,monospace);letter-spacing:.12em;border-radius:6px;padding:6px 12px;transition:all .18s}
+      .style-switch a:hover{color:var(--ink,#ece5da)}
+      .style-switch a.active{background:var(--warm-dim,#e8a25a29);color:var(--warm,#e8a25a)}
+    </style>
+    <script type="module" crossorigin src="./assets/index-B6cOJcRC.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D1EAZXV-.css">
+    <link rel="stylesheet" href="./walk/walk.css" />
+    <script type="module" src="./walk/walk.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+      <div id="canvas-wrap"></div>
+      <div id="label-layer"></div>
+    </div>
+
+    <header id="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div class="brand-text">
+          <strong>麓湖生态城</strong>
+          <em>LUXELAKES · MODERN 3D 数字沙盘</em>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <input id="search-input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="搜索地块编号 / 名称，例如 B4、麓客岛、A2-2" />
+        <kbd class="search-kbd">/</kbd>
+        <div id="search-suggest" class="suggest" hidden></div>
+      </div>
+
+      <div class="mode-switch" id="mode-switch">
+        <button data-mode="explore" class="active">EXPLORE</button>
+        <button data-mode="planning">PLANNING</button>
+      </div>
+      <div class="style-switch" id="style-switch" role="group" aria-label="沙盘风格切换">
+        <a class="active" href="./index.html" aria-current="page" aria-label="现代风格沙盘（当前）">现代</a>
+        <a href="./voxel/index.html" aria-label="切换到 Minecraft 体素风格沙盘">MINECRAFT</a>
+      </div>
+
+    </header>
+
+    <aside id="panel-left" class="panel">
+      <div class="panel-head">
+        <h3>地块筛选</h3>
+        <button class="ghost" id="filter-reset">RESET</button>
+      </div>
+      <div class="seg" id="focus-mode">
+        <button data-focus="normal" class="active">全部</button>
+        <button data-focus="focus">FOCUS</button>
+        <button data-focus="isolate">ISOLATE</button>
+      </div>
+      <div class="panel-body" id="category-list"></div>
+      <div class="panel-sub">编号系列</div>
+      <div class="chip-row" id="series-list"></div>
+    </aside>
+
+    <aside id="panel-right" class="panel">
+      <div class="panel-head">
+        <h3>图层</h3>
+        <button class="ghost" id="layers-all">ALL</button>
+      </div>
+      <div class="panel-body" id="layer-list"></div>
+      <div class="panel-sub">图例</div>
+      <div id="legend-list" class="legend"></div>
+      <div id="info-card" class="info-card" hidden></div>
+    </aside>
+
+    <footer id="bottombar">
+      <a id="backmap" href="../成都豪宅板块地图.html" aria-label="返回成都豪宅板块地图">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        返回板块地图
+      </a>
+      <div class="stat"><span id="stat-plots">—</span><em>地块</em></div>
+      <div class="stat"><span id="stat-codes">—</span><em>编号</em></div>
+      <div class="stat"><span id="stat-shown">—</span><em>当前显示</em></div>
+      <div class="stat"><span id="stat-fps">—</span><em>FPS</em></div>
+      <div class="grow"></div>
+      <div class="compare" id="compare-box">
+        <label>COMPARE MASTER PLAN</label>
+        <input id="compare-slider" type="range" min="0" max="4" step="1" value="2" />
+        <span id="compare-value">50%</span>
+      </div>
+      <button class="ghost" id="topview-btn">TOP VIEW</button>
+      <button class="ghost" id="walk-btn" title="变成小人在沙盘里步行参观">漫游 · WALK</button>
+    </footer>
+
+    <div id="walk-hud" hidden>
+      <div class="walk-readout">
+        <span class="walk-dot"></span>
+        <span id="walk-pos">—</span>
+        <span id="walk-mode">第一人称 · 步行</span>
+        <span id="walk-speed">1/3 · 1.00×</span>
+      </div>
+      <div class="walk-crosshair" aria-hidden="true"></div>
+      <div id="walk-tp" hidden>
+        <div class="tp-head">
+          <span class="tp-title">快速传送 · 组团 / 地名 / 编号</span>
+          <span class="tp-count" id="walk-tp-count">—</span>
+          <button class="ghost" id="walk-tp-close" title="关闭（ESC）">×</button>
+        </div>
+        <input
+          id="walk-tp-search"
+          type="text"
+          placeholder="输入地名或编号，如 溪 / 岛 / C23"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="tp-list" id="walk-tp-list"></div>
+        <div class="tp-foot"><b>T</b> 开关 · <b>↑ ↓</b> 选择 · <b>Enter</b> 传送 · <b>ESC</b> 关闭</div>
+      </div>
+      <div class="walk-tip">
+        <span><b>W A S D</b> 行走</span>
+        <span><b>鼠标</b> 环视</span>
+        <span><b>SPACE</b> 跳跃</span>
+        <span><b>SHIFT / 1 2 3</b> 加速档</span>
+        <span><b>Q / E</b> 转身</span>
+        <button class="ghost" id="walk-tp-open">传送 · T</button>
+        <button class="ghost" id="walk-gear">加速档 1/3 · 1.00×</button>
+        <button class="ghost" id="walk-view">第三人称 · V</button>
+        <button class="ghost" id="walk-fly">飞行 · F</button>
+        <button class="ghost on" id="walk-exit">退出漫游 · ESC</button>
+      </div>
+    </div>
+
+    <div id="loading">
+      <div class="loading-inner">
+        <div class="spinner"></div>
+        <p>正在从总平面图构建矢量世界…</p>
+        <small>MASTER PLAN = GROUND TRUTH</small>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+  </body>
+</html>
+

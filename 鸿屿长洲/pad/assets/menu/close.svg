@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-17.3" y="-17.3" width="114.6" height="114.6"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(8.65px);clip-path:url(#bgblur_0_0_5_clip_path);height:100%;width:100%"></div></foreignObject><g id="Frame 763" data-figma-bg-blur-radius="17.3">
+<path d="M0 40C0 17.9086 17.9086 0 40 0V0C62.0914 0 80 17.9086 80 40V40C80 62.0914 62.0914 80 40 80V80C17.9086 80 0 62.0914 0 40V40Z" fill="url(#paint0_linear_0_5)" fill-opacity="0.22"/>
+<path d="M40 0.5C61.8152 0.5 79.5 18.1848 79.5 40C79.5 61.8152 61.8152 79.5 40 79.5C18.1848 79.5 0.5 61.8152 0.5 40C0.5 18.1848 18.1848 0.5 40 0.5Z" stroke="white" stroke-opacity="0.32"/>
+<path id="Vector" d="M40 37.3123L29.2384 26.5508C28.5175 25.8298 27.304 25.8196 26.5618 26.5618C25.8145 27.3091 25.8147 28.5023 26.5508 29.2384L37.3123 40L26.5508 50.7616C25.8298 51.4825 25.8196 52.696 26.5617 53.4382C27.3091 54.1855 28.5023 54.1853 29.2384 53.4492L40 42.6877L50.7616 53.4492C51.4825 54.1702 52.696 54.1804 53.4382 53.4383C54.1855 52.6909 54.1853 51.4977 53.4492 50.7616L42.6877 40L53.4492 29.2384C54.1702 28.5175 54.1804 27.304 53.4383 26.5618C52.6909 25.8145 51.4977 25.8147 50.7616 26.5508L40 37.3123Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_0_5_clip_path" transform="translate(17.3 17.3)"><path d="M0 40C0 17.9086 17.9086 0 40 0V0C62.0914 0 80 17.9086 80 40V40C80 62.0914 62.0914 80 40 80V80C17.9086 80 0 62.0914 0 40V40Z"/>
+</clipPath><linearGradient id="paint0_linear_0_5" x1="40" y1="80" x2="40" y2="0" gradientUnits="userSpaceOnUse">
+<stop/>
+<stop offset="1" stop-color="#414141"/>
+</linearGradient>
+</defs>
+</svg>
