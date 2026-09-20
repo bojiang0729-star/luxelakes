@@ -505,9 +505,7 @@
     @media (max-width: 759px) {
       .map-brandbar { min-block-size: 56px; padding-inline: 14px; }
       .map-brandbar__brand span { display: none; }
-      .map-brandbar__nav { gap: 0; }
-      .map-brandbar__nav a { padding-inline: 8px; font-size: .72rem; letter-spacing: 0; }
-      .map-brandbar__nav a:nth-child(n + 3) { display: none; }
+      .map-brandbar__nav { display: none; }
       .map-mode-switch { inset: 68px 12px auto auto; }
       .map-sandbox-btn { inset: 68px auto auto 12px; padding-inline: 13px; font-size: .74rem; gap: 7px; }
       .map-panel {
@@ -549,6 +547,45 @@
       font-weight: 650; letter-spacing: .06em;
     }
     .map-brandbar__nav a.map-brandbar__nav--sandbox:hover { color: #182522; background: #f4e7c4; }
+
+    /* ===== 移动端折叠导航 ===== */
+    .map-brandbar__toggle,
+    .map-mobile-nav { display: none; }
+
+    @media (max-width: 759px) {
+      .map-brandbar__toggle {
+        display: inline-flex; align-items: center; gap: 8px;
+        min-block-size: 44px; padding-inline: 13px;
+        color: #f4f0e7; background: rgb(244 240 231 / 10%);
+        border: 1px solid rgb(244 240 231 / 22%); border-radius: 9px;
+        font-family: inherit; font-size: .76rem; letter-spacing: .08em; cursor: pointer;
+      }
+      .map-brandbar__toggle svg { inline-size: 15px; block-size: 15px; flex: none; }
+      .map-brandbar__toggle[aria-expanded="true"] { background: rgb(244 240 231 / 20%); }
+
+      .map-mobile-nav {
+        display: block; position: fixed; z-index: 1300;
+        inset: 62px 12px auto; padding: 6px;
+        background: rgb(12 26 24 / 97%);
+        border: 1px solid rgb(244 240 231 / 14%); border-radius: 14px;
+        box-shadow: 0 22px 60px rgb(6 14 13 / 50%);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      }
+      .map-mobile-nav[hidden] { display: none; }
+      .map-mobile-nav a {
+        display: flex; align-items: center; justify-content: space-between;
+        min-block-size: 52px; padding-inline: 14px;
+        color: #e9e5d9; text-decoration: none; border-radius: 9px;
+        font-size: .88rem; letter-spacing: .1em;
+      }
+      .map-mobile-nav a + a { border-block-start: 1px solid rgb(244 240 231 / 8%); }
+      .map-mobile-nav a[aria-current="page"] { color: #f4e7c4; }
+      .map-mobile-nav a:active { background: rgb(244 240 231 / 9%); }
+      .map-mobile-nav a.map-brandbar__nav--sandbox {
+        justify-content: center; color: #182522; background: #e9d9ad;
+        margin-block-start: 5px; font-weight: 650; letter-spacing: .08em;
+      }
+    }
 
     /* ===== 3D 数字沙盘入口 ===== */
     .map-sandbox-btn {
@@ -593,7 +630,24 @@
       <a href="鸿屿长洲/index.html">鸿屿长洲</a>
       <a href="麓湖生态城3D/luxelakes-3d.html" class="map-brandbar__nav--sandbox" aria-label="打开麓湖生态城 3D 数字沙盘">3D沙盘</a>
     </nav>
+    <button class="map-brandbar__toggle" type="button"
+            aria-expanded="false" aria-controls="map-mobile-nav"
+            data-map-nav-toggle>
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+      菜单
+    </button>
   </header>
+
+  <nav class="map-mobile-nav" id="map-mobile-nav" aria-label="站点导航" data-map-nav-panel hidden>
+    <a href="麓湖生态城.html">首页</a>
+    <a href="成都豪宅板块地图.html" aria-current="page">板块地图</a>
+    <a href="浔岭/浔岭.html">浔岭</a>
+    <a href="沉香谷/沉香谷.html">沉香谷</a>
+    <a href="鸿屿长洲/index.html">鸿屿长洲</a>
+    <a href="麓湖生态城3D/luxelakes-3d.html" class="map-brandbar__nav--sandbox" aria-label="打开麓湖生态城 3D 数字沙盘">3D沙盘</a>
+  </nav>
 
   <main class="map-shell" id="main" data-map-root>
     <div id="property-map" aria-label="成都豪宅板块地图"></div>
@@ -1508,6 +1562,48 @@ const filterProperties = (records, { text = '', district = 'all', status = 'all'
     }, 500);
   }
 })();
+  </script>
+
+  <script>
+    /* 移动端折叠导航 */
+    (function () {
+      var toggle = document.querySelector('[data-map-nav-toggle]');
+      var panel = document.querySelector('[data-map-nav-panel]');
+      if (!toggle || !panel) return;
+
+      function setOpen(open) {
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) { panel.removeAttribute('hidden'); } else { panel.setAttribute('hidden', ''); }
+      }
+
+      setOpen(false);
+
+      toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+        setOpen(panel.hasAttribute('hidden'));
+      });
+
+      panel.addEventListener('click', function (event) {
+        if (event.target.closest('a')) setOpen(false);
+      });
+
+      document.addEventListener('click', function (event) {
+        if (panel.hasAttribute('hidden')) return;
+        if (panel.contains(event.target) || toggle.contains(event.target)) return;
+        setOpen(false);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !panel.hasAttribute('hidden')) {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 759) setOpen(false);
+      });
+    })();
   </script>
 </body>
 </html>

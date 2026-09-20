@@ -1,0 +1,191 @@
+/* ===========================================================================
+ * 麓湖生态城 3D 数字沙盘 · 移动端适配（手机 ≤767px）
+ * ---------------------------------------------------------------------------
+ * 独立于 Vite 打包产物，在每个页面 </head> 之前引入，加载顺序晚于
+ * assets/index-*.css 与 walk/walk.css，因此同特异度规则可直接覆盖。
+ * 目标（390×844）：顶部 EXPLORE/PLANNING/现代/MINECRAFT 与搜索框、
+ * 左右侧栏（地块筛选 / 图层图例）、底部状态栏与 COMPARE 滑条全部可见可点。
+ * =========================================================================== */
+
+/* 抽屉遮罩 */
+#mv-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: #05070ad9;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .28s ease, visibility .28s ease;
+}
+#mv-backdrop.show { opacity: 1; visibility: visible; }
+
+/* 底部栏里的「筛选 / 图层」开关：仅手机显示 */
+#mv-tools { display: none; align-items: center; gap: 6px; }
+/* 抽屉内的「收起」按钮：仅手机显示 */
+.mv-close { display: none; }
+
+@media (max-width: 767px) {
+
+  /* ------------------------------------------------------------------
+   * 1. 顶部栏：两行（第一行 品牌 + 模式 + 风格，第二行 搜索框整行）
+   * ---------------------------------------------------------------- */
+  #topbar {
+    height: auto;
+    min-height: 0;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    row-gap: 6px;
+    padding: calc(7px + env(safe-area-inset-top, 0px)) 10px 8px;
+    background: linear-gradient(#0a0c0ff7 0%, #0a0c0fe8 80%, #0a0c0f00 100%);
+  }
+  .brand { min-width: 0; gap: 7px; flex: 0 0 auto; }
+  .brand-mark { width: 18px; height: 18px; border-radius: 4px; flex: none; }
+  .brand-mark:after { top: 5px; bottom: 4px; left: 5px; right: 4px; }
+  .brand-text { flex: none; }
+  .brand-text strong {
+    font-size: 12px;
+    letter-spacing: .1em;
+    white-space: nowrap;
+  }
+  .brand-text em { display: none; }
+
+  .search-wrap {
+    order: 10;
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  #search-input {
+    height: 34px;
+    font-size: 12px;
+    padding: 0 12px;
+  }
+  .search-kbd { display: none; }
+  .suggest { top: 38px; max-height: 46vh; }
+
+  .mode-switch { padding: 2px; flex: 0 0 auto; }
+  .mode-switch button {
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: 9.5px;
+    letter-spacing: .04em;
+  }
+  .style-switch { padding: 2px; gap: 2px; margin-left: auto; flex: 0 0 auto; }
+  .style-switch a {
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: 9.5px;
+    letter-spacing: .04em;
+  }
+
+  /* ------------------------------------------------------------------
+   * 2. 左右侧栏 → 底部抽屉（900px 断点原本 display:none，此处恢复）
+   * ---------------------------------------------------------------- */
+  .panel {
+    display: flex;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: 66vh;
+    border-radius: 14px 14px 0 0;
+    border-bottom: 0;
+    z-index: 60;
+    box-shadow: 0 -16px 44px #000000b8;
+    transform: translateY(102%);
+    transition: transform .3s cubic-bezier(.22, .7, .3, 1);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  #panel-left { left: 0; }
+  #panel-right { width: auto; right: 0; }
+  .panel.mv-open { transform: none; }
+
+  .panel-head { padding: 12px 14px 10px; flex: none; }
+  .panel-head h3 { font-size: 12px; }
+  .panel-head .ghost { min-height: 30px; padding: 0 10px; }
+  .mv-close { display: inline-flex; align-items: center; }
+
+  .panel-body { flex: 1 1 auto; min-height: 120px; padding: 10px 8px 4px; }
+  .panel-sub, .chip-row, .seg, .legend { flex: none; }
+  .cat-row, .layer-row, .legend-item { min-height: 44px; padding: 8px 9px; }
+  .cat-name, .legend-label, .layer-name { font-size: 12.5px; }
+  .chip { padding: 6px 10px; }
+  .seg button { min-height: 38px; font-size: 10.5px; }
+  .info-close { min-width: 34px; min-height: 34px; font-size: 16px; }
+}
+
+@media (max-width: 767px) {
+
+  /* ------------------------------------------------------------------
+   * 3. 底部状态栏：两行铺满视口
+   *    第一行 返回 + 地块/编号/当前显示/FPS + 筛选/图层
+   *    第二行 COMPARE 滑条 + TOP VIEW + 漫游
+   * ---------------------------------------------------------------- */
+  #bottombar {
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    width: auto;
+    height: auto;
+    min-height: 44px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+  #bottombar .grow { display: none; }
+
+  #backmap {
+    font-size: 0;
+    gap: 5px;
+    min-height: 36px;
+    padding: 0 10px;
+  }
+  #backmap::after { content: "返回"; font-size: 11px; letter-spacing: .08em; }
+  #backmap svg { width: 14px; height: 14px; }
+
+  .stat span { font-size: 12px; }
+  .stat em { font-size: 8.5px; letter-spacing: .1em; }
+
+  .compare { gap: 7px; }
+  .compare label { display: none; }
+  #compare-slider { width: 88px; height: 4px; }
+  #compare-slider::-webkit-slider-thumb { width: 17px; height: 17px; }
+  #compare-value { width: 32px; font-size: 10px; }
+
+  #bottombar .ghost { min-height: 36px; padding: 0 10px; font-size: 9.5px; }
+
+  #mv-tools { display: flex; }
+  #mv-tools .ghost { min-height: 40px; padding: 0 13px; font-size: 10.5px; }
+  #mv-tools .ghost.on { color: #241708; background: var(--warm); border-color: var(--warm); }
+
+  /* ------------------------------------------------------------------
+   * 4. 提示条与动态开关：避开上方顶栏与下方状态栏
+   * ---------------------------------------------------------------- */
+  #toast {
+    left: 10px;
+    right: 10px;
+    bottom: 112px;
+    max-width: none;
+    transform: translateY(10px);
+  }
+  #toast.show { transform: translateY(0); }
+
+  #motion-control {
+    bottom: 112px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: none;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+  }
+}

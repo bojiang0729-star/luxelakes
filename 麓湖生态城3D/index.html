@@ -19,6 +19,8 @@
     <link rel="stylesheet" crossorigin href="./assets/index-D1EAZXV-.css">
     <link rel="stylesheet" href="./walk/walk.css" />
     <script type="module" src="./walk/walk.js"></script>
+    <link rel="stylesheet" href="./3d-mobile.css" />
+    <script defer src="./3d-mobile.js"></script>
   </head>
   <body>
     <div id="stage">
@@ -91,6 +93,10 @@
       <div class="stat"><span id="stat-shown">—</span><em>当前显示</em></div>
       <div class="stat"><span id="stat-fps">—</span><em>FPS</em></div>
       <div class="grow"></div>
+      <div id="mv-tools" role="group" aria-label="面板开关">
+        <button class="ghost" type="button" data-mv-panel="panel-left" aria-expanded="false" aria-controls="panel-left">筛选</button>
+        <button class="ghost" type="button" data-mv-panel="panel-right" aria-expanded="false" aria-controls="panel-right">图层</button>
+      </div>
       <div class="compare" id="compare-box">
         <label>COMPARE MASTER PLAN</label>
         <input id="compare-slider" type="range" min="0" max="4" step="1" value="2" />

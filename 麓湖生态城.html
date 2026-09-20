@@ -90,7 +90,18 @@ section{overflow-x:clip}
     <div class="flex items-center gap-3">
       <a href="成都豪宅板块地图.html" class="btn-back text-xs py-2 px-4 hidden sm:flex"><i class="fas fa-arrow-left"></i> 返回地图</a>
       <a href="#ideal" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-5 rounded-full transition-all duration-300 hidden sm:inline-block">预约看房</a>
+      <button id="navToggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-label="打开导航菜单"><i class="fas fa-bars"></i></button>
     </div>
+  </div>
+
+  <div id="navMenu" hidden>
+    <a href="#location">城市定位 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="#resources">自然资源 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="#data">数据亮点 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="#amenities">生活配套 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="#brand">品牌实力 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="#ideal">理想兑现 <i class="fas fa-chevron-right text-xs opacity-40"></i></a>
+    <a href="成都豪宅板块地图.html" class="nav-menu__cta">返回板块地图</a>
   </div>
 </nav>
 
@@ -628,6 +639,37 @@ window.addEventListener('scroll',function(){
     a.classList.toggle('active',a.getAttribute('href')==='#'+current);
   });
 });
+
+// === 移动端折叠导航 ===
+(function(){
+  var toggle=document.getElementById('navToggle');
+  var menu=document.getElementById('navMenu');
+  if(!toggle||!menu)return;
+  function setOpen(open){
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+    if(open){menu.removeAttribute('hidden');}else{menu.setAttribute('hidden','');}
+    toggle.innerHTML=open?'<i class="fas fa-times"></i>':'<i class="fas fa-bars"></i>';
+  }
+  setOpen(false);
+  toggle.addEventListener('click',function(e){
+    e.stopPropagation();
+    setOpen(menu.hasAttribute('hidden'));
+  });
+  menu.addEventListener('click',function(e){
+    if(e.target.closest('a'))setOpen(false);
+  });
+  document.addEventListener('click',function(e){
+    if(menu.hasAttribute('hidden'))return;
+    if(menu.contains(e.target)||toggle.contains(e.target))return;
+    setOpen(false);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!menu.hasAttribute('hidden')){setOpen(false);toggle.focus();}
+  });
+  window.addEventListener('resize',function(){
+    if(window.innerWidth>767)setOpen(false);
+  });
+})();
 </script>
 </body>
 </html>

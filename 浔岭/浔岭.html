@@ -109,19 +109,30 @@
       50%{box-shadow:0 16px 50px rgba(201,168,76,0.3),0 0 80px rgba(201,168,76,0.12)}}
     @keyframes card-pulse{0%,100%{opacity:1}50%{opacity:0.6}}
 
+    [x-cloak]{display:none!important}
+
+    /* 移动端导航菜单 */
+    .mnav-link{display:flex;align-items:center;justify-content:space-between;
+      min-height:52px;padding:0 4px;font-size:0.9rem;letter-spacing:0.15em;
+      color:rgba(255,255,255,0.72);border-bottom:1px solid rgba(255,255,255,0.06);
+      transition:color 0.3s}
+    .mnav-link:active{color:var(--gold)}
+    .mnav-link svg{width:14px;height:14px;opacity:0.35;flex:none}
+
     @media(max-width:768px){
       .fog-layer::before,.fog-layer::after,.light-sweep{animation:none}
-      .mh{width:16px;height:16px}.mh .tip{font-size:11px;padding:6px 12px}
+      .mh{width:26px;height:26px}.mh .tip{font-size:11px;padding:6px 12px}
+      .mh:hover{transform:none}
     }
   </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav x-data="{ scrolled: false }"
+<nav x-data="{ scrolled: false, open: false }"
      x-init="window.addEventListener('scroll',()=>scrolled=window.scrollY>60)"
      class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-     :class="scrolled?'glass-dark shadow-lg shadow-black/20':'bg-transparent'">
+     :class="(scrolled||open)?'glass-dark shadow-lg shadow-black/20':'bg-transparent'">
   <div class="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between h-16 lg:h-20">
     <div class="flex items-center gap-3">
       <span class="font-sc text-xl lg:text-2xl tracking-[0.3em] gt font-light">浔岭</span>
@@ -137,11 +148,32 @@
       <a href="../成都豪宅板块地图.html" target="_blank" class="text-xs tracking-[0.15em] text-white/40 hover:text-[var(--gold)] transition-colors duration-300">板块地图</a>
       <a href="#contact" class="btn-g text-black text-xs font-medium px-5 py-2 rounded-full tracking-[0.1em]">预约看房</a>
     </div>
-    <button class="md:hidden flex flex-col gap-1.5 p-2" @click="scrolled=!scrolled" aria-label="菜单">
-      <span class="block w-5 h-px bg-white/60 transition-transform duration-300" :class="scrolled?'rotate-45 translate-y-[4px]':''"></span>
-      <span class="block w-5 h-px bg-white/60 transition-opacity duration-300" :class="scrolled?'opacity-0':''"></span>
-      <span class="block w-5 h-px bg-white/60 transition-transform duration-300" :class="scrolled?'-rotate-45 -translate-y-[4px]':''"></span>
+    <button class="md:hidden relative z-10 flex flex-col gap-1.5 p-3 min-h-[44px] justify-center items-center -mr-2" @click="open=!open"
+            :aria-expanded="open.toString()" aria-controls="mobile-nav" aria-label="打开导航菜单">
+      <span class="block w-5 h-px bg-white/60 transition-transform duration-300" :class="open?'rotate-45 translate-y-[4px]':''"></span>
+      <span class="block w-5 h-px bg-white/60 transition-opacity duration-300" :class="open?'opacity-0':''"></span>
+      <span class="block w-5 h-px bg-white/60 transition-transform duration-300" :class="open?'-rotate-45 -translate-y-[4px]':''"></span>
     </button>
+  </div>
+
+  <!-- 移动端菜单 -->
+  <div id="mobile-nav" x-cloak x-show="open"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 -translate-y-3"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 -translate-y-3"
+       class="md:hidden glass-dark border-t border-white/5 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+    <div class="px-6 pb-6 pt-2">
+      <a href="#position"  class="mnav-link" @click="open=false">项目定位<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="#park"      class="mnav-link" @click="open=false">公园生活<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="#layouts"   class="mnav-link" @click="open=false">主力户型<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="#amenities" class="mnav-link" @click="open=false">生活配套<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="#design"    class="mnav-link" @click="open=false">设计语言<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="../成都豪宅板块地图.html" target="_blank" class="mnav-link" @click="open=false">板块地图<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>
+      <a href="#contact" class="btn-g mt-5 flex items-center justify-center w-full min-h-[52px] rounded-full text-black text-sm font-medium tracking-[0.1em]" @click="open=false">预约看房</a>
+    </div>
   </div>
 </nav>
 
@@ -238,13 +270,13 @@
                :style="'background-image:url('+(parkBg[active]||'公园沉浸体验/首张背景板.jpg')+');filter:brightness(0.75)saturate(0.85)'"
                :class="active ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-sm'"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
-          <div class="mh" style="left:22%;top:35%;--i:0" @mouseenter="active='kids'" @mouseleave="active=null" :class="{'active':active==='kids'}"><span class="tip">儿童活动区</span></div>
-          <div class="mh" style="left:55%;top:25%;--i:1" @mouseenter="active='bamboo'" @mouseleave="active=null" :class="{'active':active==='bamboo'}"><span class="tip">竹林园</span></div>
-          <div class="mh" style="left:75%;top:40%;--i:2" @mouseenter="active='flowers'" @mouseleave="active=null" :class="{'active':active==='flowers'}"><span class="tip">200余种花卉</span></div>
-          <div class="mh" style="left:40%;top:55%;--i:3" @mouseenter="active='lake'" @mouseleave="active=null" :class="{'active':active==='lake'}"><span class="tip">挖湖造岛</span></div>
-          <div class="mh" style="left:65%;top:65%;--i:4" @mouseenter="active='slide'" @mouseleave="active=null" :class="{'active':active==='slide'}"><span class="tip">滑梯</span></div>
-          <div class="mh" style="left:30%;top:75%;--i:5" @mouseenter="active='water'" @mouseleave="active=null" :class="{'active':active==='water'}"><span class="tip">亲水平台</span></div>
-          <div class="mh" style="left:80%;top:55%;--i:6" @mouseenter="active='maple'" @mouseleave="active=null" :class="{'active':active==='maple'}"><span class="tip">香山赏红叶</span></div>
+          <div class="mh" style="left:22%;top:35%;--i:0" @mouseenter="active='kids'" @mouseleave="active=null" @click="active=(active==='kids'?null:'kids')" :class="{'active':active==='kids'}"><span class="tip">儿童活动区</span></div>
+          <div class="mh" style="left:55%;top:25%;--i:1" @mouseenter="active='bamboo'" @mouseleave="active=null" @click="active=(active==='bamboo'?null:'bamboo')" :class="{'active':active==='bamboo'}"><span class="tip">竹林园</span></div>
+          <div class="mh" style="left:75%;top:40%;--i:2" @mouseenter="active='flowers'" @mouseleave="active=null" @click="active=(active==='flowers'?null:'flowers')" :class="{'active':active==='flowers'}"><span class="tip">200余种花卉</span></div>
+          <div class="mh" style="left:40%;top:55%;--i:3" @mouseenter="active='lake'" @mouseleave="active=null" @click="active=(active==='lake'?null:'lake')" :class="{'active':active==='lake'}"><span class="tip">挖湖造岛</span></div>
+          <div class="mh" style="left:65%;top:65%;--i:4" @mouseenter="active='slide'" @mouseleave="active=null" @click="active=(active==='slide'?null:'slide')" :class="{'active':active==='slide'}"><span class="tip">滑梯</span></div>
+          <div class="mh" style="left:30%;top:75%;--i:5" @mouseenter="active='water'" @mouseleave="active=null" @click="active=(active==='water'?null:'water')" :class="{'active':active==='water'}"><span class="tip">亲水平台</span></div>
+          <div class="mh" style="left:80%;top:55%;--i:6" @mouseenter="active='maple'" @mouseleave="active=null" @click="active=(active==='maple'?null:'maple')" :class="{'active':active==='maple'}"><span class="tip">香山赏红叶</span></div>
 
           <!-- Info panel synced with background -->
           <div x-show="active" x-transition:enter="transition ease-out duration-700" x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
